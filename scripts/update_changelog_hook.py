@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
-CHANGELOG 동기화 훅 — Claude Code Stop 이벤트에서 자동 실행.
+CHANGELOG 동기화 + 소스코드 자동 commit/push 훅 — Claude Code Stop 이벤트에서 자동 실행.
 
 app.py의 APP_VERSION이 CHANGELOG.md 두 테이블 모두에 기록되어 있는지 확인:
   1. 개정이력표      (| 날짜 | 시간 | 버전 | 변경 내용 | 요청자 | 작성자 |)
   2. 버전별 주요 변경 요약 (| 버전 | 날짜 | 시간(KST) | 주요 내용 |)
 
-누락된 경우 플레이스홀더 행을 삽입하고 stderr로 경고를 출력한다.
+누락된 경우 플레이스홀더 행을 삽입한다.
+작업 종료 시 변경된 tracked 파일 전체를 자동 commit·push한다.
 """
 import json
 import re
@@ -124,26 +125,52 @@ def main() -> None:
         CHANGELOG.write_text("".join(lines), encoding="utf-8")
         for w in warnings:
             print(w, file=sys.stderr)
-        _git_commit_and_push(ver_tag)
 
+    _auto_commit_and_push(ver_tag, changelog_updated=modified)
     sys.exit(0)
 
 
-def _git_commit_and_push(ver_tag: str) -> None:
-    """CHANGELOG 변경 사항을 git에 자동 커밋·푸시."""
+def _auto_commit_and_push(ver_tag: str, changelog_updated: bool) -> None:
+    """변경된 tracked 파일 전체를 자동 커밋·푸시."""
     try:
+        # 수정된 tracked 파일만 스테이징 (untracked 새 파일은 제외 — 민감 파일 보호)
         subprocess.run(
-            ["git", "add", str(CHANGELOG)],
+            ["git", "add", "-u"],
             cwd=PROJECT_ROOT, check=True, capture_output=True,
         )
+
+        # 스테이징된 파일 목록 확인
+        result = subprocess.run(
+            ["git", "diff", "--cached", "--name-only"],
+            cwd=PROJECT_ROOT, check=True, capture_output=True, text=True,
+        )
+        staged_files = [f.strip() for f in result.stdout.splitlines() if f.strip()]
+
+        if not staged_files:
+            return  # 변경 없음
+
+        # 커밋 메시지 생성
+        only_changelog = staged_files == ["CHANGELOG.md"]
+        if only_changelog:
+            msg = f"chore: auto-update CHANGELOG for {ver_tag}"
+        else:
+            non_changelog = [f for f in staged_files if f != "CHANGELOG.md"]
+            file_summary = ", ".join(non_changelog[:3])
+            if len(non_changelog) > 3:
+                file_summary += f" 외 {len(non_changelog) - 3}개"
+            suffix = " + CHANGELOG" if changelog_updated else ""
+            msg = f"chore: auto-sync {ver_tag} — {file_summary}{suffix}"
+
         subprocess.run(
-            ["git", "commit", "-m", f"chore: auto-update CHANGELOG for {ver_tag}"],
+            ["git", "commit", "-m", msg],
             cwd=PROJECT_ROOT, check=True, capture_output=True,
         )
         subprocess.run(
             ["git", "push"],
             cwd=PROJECT_ROOT, check=True, capture_output=True,
         )
+        print(f"✅ auto-push 완료: {msg}", file=sys.stderr)
+
     except subprocess.CalledProcessError as e:
         print(f"⚠️  git push 실패: {e.stderr.decode(errors='replace').strip()}", file=sys.stderr)
 
