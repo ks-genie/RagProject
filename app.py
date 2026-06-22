@@ -34,7 +34,7 @@ _LOG_PATH = setup_logging()
 # ---------------------------------------------------------------------------
 # 앱 버전 / 수정 시간
 # ---------------------------------------------------------------------------
-APP_VERSION  = "1.61"
+APP_VERSION  = "1.62"
 _mtime       = os.path.getmtime(__file__)
 APP_MODIFIED = datetime.fromtimestamp(_mtime).strftime("%Y-%m-%d %H:%M:%S")
 
