@@ -1,0 +1,54 @@
+# ==========================================
+# RAG Project 설정 파일
+# ==========================================
+
+# PDF 감시 디렉토리 (절대 경로 또는 상대 경로)
+watch_dir: "data/pdf_watch"
+
+# OCR 설정
+ocr:
+  language: "kor+eng"
+  tesseract_cmd: "C:/Program Files/Tesseract-OCR/tesseract.exe"
+  tessdata_dir: "C:/Program Files/Tesseract-OCR/tessdata"
+  min_text_length: 50        # 텍스트 레이어 유효성 판단 임계값 (글자 수)
+  quality_threshold: 0.5     # OCR 품질 점수 임계값 (0.0 ~ 1.0)
+
+# 데이터베이스
+database:
+  path: "data/rag_project.db"
+
+# AnythingLLM API
+anythingllm:
+  base_url: "http://localhost:3001"
+  api_key: ""          # .env 파일의 ANYTHINGLLM_API_KEY 사용 (필수)
+  workspace: ""        # .env 파일의 ANYTHINGLLM_WORKSPACE 사용 (필수)
+  upload_timeout: 120        # 업로드/임베딩 요청 타임아웃 (초) — 대용량 문서 대응
+
+# 색인 상태 추적
+indexing:
+  poll_interval: 10          # 폴링 간격 (초)
+  timeout: 300               # 색인 완료 대기 타임아웃 (초, 5분)
+
+# 재시도 로직
+retry:
+  max_attempts: 3
+  backoff_seconds: [60, 120, 240]  # Exponential Backoff (1분, 2분, 4분)
+
+# LLM OCR 후처리 교정 (스캔 문서 전용) — Claude · Gemini 지원
+llm_correction:
+  enabled: true              # true로 변경하면 EasyOCR 결과를 LLM으로 추가 교정
+  provider: "gemini"         # "claude" | "gemini"
+  claude:
+    model: "claude-haiku-4-5-20251001"  # haiku: 빠름·저렴 / sonnet-4-6: 고품질
+    max_tokens: 8192         # 페이지당 최대 출력 토큰 (한국어 ~4000자 기준)
+    timeout: 60              # API 타임아웃 (초)
+    # api_key: .env 파일의 ANTHROPIC_API_KEY 사용
+  gemini:
+    model: "gemini-2.0-flash"  # flash: 빠름·저렴 / gemini-1.5-pro: 고품질
+    timeout: 60              # API 타임아웃 (초)
+    # api_key: .env 파일의 GOOGLE_API_KEY 사용
+
+# 로그
+logging:
+  level: "INFO"              # DEBUG / INFO / WARNING / ERROR
+  file: "logs/rag_project.log"

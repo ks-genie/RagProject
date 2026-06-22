@@ -1,0 +1,243 @@
+# RAG Pipeline — 개정 이력 (Revision History)
+
+> 형식: 날짜(yyyymmdd) / 시간(hhmm, KST) / 버전 / 변경 내용 / 요청자 / 작성자  
+> 날짜·시간은 파일 수정 시각(mtime, KST) 및 DB process_logs 타임스탬프(UTC→KST 변환) 기준.  
+> 확인 불가한 항목은 공백으로 표시.
+
+---
+
+## 개정 이력표
+
+| 날짜 | 시간 | 버전 | 변경 내용 | 요청자 | 작성자 |
+|------|------|------|-----------|--------|--------|
+| 20260415 | 1604 | v0.0.1 | 초기 기획서 작성 (기획서_프로젝트계획서_v1.1.docx) | kslee | claude |
+| 20260415 | 2136 | v0.0.2 | 개발 계획서 v3 작성 (Development_Plan_v3.docx) — PDF→AnythingLLM 파이프라인 전체 설계 | kslee | claude |
+| 20260416 | 1336 | v0.1.0 | Phase 0 — 환경 점검. phase0_check.py 작성, AnythingLLM API 응답 테스트 | kslee | claude |
+| 20260416 | 1421 | v0.1.1 | Phase 0 — anythingllm.env 생성. Tesseract OCR 설치 확인, config.yaml + .env 이중 설정 구조 설계 | kslee | claude |
+| 20260416 | 1514 | v0.2.0 | Phase 1 — SQLite DB 초기화. src/__init__.py, config.py 생성, `documents`/`process_logs` 테이블 설계, WAL 모드 활성화 | kslee | claude |
+| 20260416 | 1517 | v0.2.1 | test_database.py 작성, README.md 초안 작성 | kslee | claude |
+| 20260416 | 1524 | v0.2.2 | Development_Plan_v4.md 작성 — Phase 0~8 기본 설계 기술 | kslee | claude |
+| 20260416 | 1527 | v0.2.3 | migrate.py 작성 — 스키마 보존 마이그레이션 | kslee | claude |
+| 20260416 | 1528 | v0.2.4 | requirements.txt 작성, test_file_scanner.py 작성 | kslee | claude |
+| 20260416 | 1538 | v0.5.1 | layout_splitter.py 구현. OpenCV 기반 다단 컬럼 ROI 분리, 3% 스무딩, valley < side_mean×0.35 | kslee | claude |
+| 20260416 | 1539 | v0.5.2 | formula_handler.py 구현. 수식 영역 감지(분수선·소형 윤곽 패턴) 및 마스킹 | kslee | claude |
+| 20260416 | 1540 | v0.5.3 | test_ocr_engine.py 작성 | kslee | claude |
+| 20260416 | 1542 | v0.6.0 | Phase 5 — preprocessor.py 구현. 공백 정규화, 특수문자 처리, 최소 길이 검증, REVIEW_REQUIRED 분기. test_preprocessor.py 작성 | kslee | claude |
+| 20260416 | 1549 | v0.7.0 | Phase 6 — api_client.py 구현. AnythingLLM raw-text 업로드 엔드포인트 연동, anythingllm_doc_id 수신 및 저장 | kslee | claude |
+| 20260416 | 1550 | v0.7.1 | test_api_client.py 작성 | kslee | claude |
+| 20260416 | 1551 | v0.7.2 | Phase 7 — status_tracker.py 구현. AnythingLLM update-embeddings가 동기 처리임을 확인, 폴링 제거, 단일 호출로 INDEXED까지 순차 기록 | kslee | claude |
+| 20260416 | 1552 | v0.8.1 | pipeline.py 구현 — Phase 2~8 오케스트레이터, PipelineStats 반환 | kslee | claude |
+| 20260416 | 1553 | v0.3.0 | Phase 2 — file_scanner.py 구현. 감시 디렉토리 순회, MD5 해시 중복 비교, 신규 PDF DB 등록 | kslee | claude |
+| 20260416 | 1558 | v0.8.2 | test_pipeline.py 작성 | kslee | claude |
+| 20260416 | 1601 | v0.8.0 | Phase 8 — retry_handler.py 구현. Exponential Backoff(60s/120s/240s), 최대 3회, sleep_fn=None 기본값으로 테스트 패치 가능 | kslee | claude |
+| 20260416 |      | v5.0.0 | Phase 9 — app.py 구현 (Streamlit UI v0.9.1). 5탭 구성, PDF 원본/OCR 비교 뷰어, 반투명 글래스 네비게이션 바, 전체 재OCR 기능. ※app.py 원본 생성 시각 확인 불가 (Apr 17 수정으로 덮어써짐) | kslee | claude |
+| 20260416 |      | v0.4.0 | Phase 3 — pdf_analyzer.py 초기 구현. source_type 판별, 초기 레이아웃 감지, 언어 감지, 수식 감지. ※초기 생성 시각 확인 불가 (21:09 수정본이 마지막 기록) | kslee | claude |
+| 20260416 | 1617 | —      | Phase 10 — 파이프라인 첫 실행 (DB 로그: 07:17 UTC = 16:17 KST) | kslee | claude |
+| 20260416 | 2109 | v4.1.0 | 레이아웃 감지 전면 개선. pdf_analyzer.py 개선 — 줄(line) 단위 x-커버리지 알고리즘. BINS=200, MIN_GAP=3, n_lines<10·side_mean≤0.10 페이지 제외. IEEE ISSCC 논문 다단 오탐 해결 | kslee | claude |
+| 20260416 | 2235 | v4.1.3 | database.py, strategy_selector.py 업데이트 — DIGITAL_EXTRACT_MULTI 포함 8가지 전략 매트릭스 완성 | kslee | claude |
+| 20260416 | 2236 | v4.1.1 | DIGITAL_EXTRACT_MULTI 전략 신설. _find_column_gap() → 갭 x 탐지 → 좌/우 분리 → y→x 정렬. HBM DRAM IEEE 논문 quality=0.9941 검증 | kslee | claude |
+| 20260416 | 2237 | v4.1.2 | ocr_engine.py 업데이트 — 스캔본 적응형 OCR _ocr_adaptive() 공통 경로 통합. test_pdf_analyzer.py 작성 | kslee | claude |
+| 20260416 | 2322 | —      | Phase 10 — 전체 처리 완료 (DB 로그: 14:22 UTC = 23:22 KST, 37건 전체 INDEXED) | kslee | claude |
+| 20260417 | 1003 | v5.1.0 | 코드-명세 정합성 보완 작업 시작 (이전_Development_Plan_v5.md 백업 생성). Development_Plan v5.0 → v5.1 — ①side_mean≤0.10, ②페이지 상한, ③스캔 전략 적응형 처리, ④LayoutSplitter 파라미터, ⑤StatusTracker 동기 처리. 설정 파라미터 표 신설, 실행 명령 확정 | kslee | claude |
+| 20260417 | 1031 | v5.0.2 | 보안 정보 분리 — .env 신규 생성, api_key·workspace 이전. config.yaml에서 민감 정보 제거 | kslee | claude |
+| 20260417 | 1037 | v5.0.3 | .gitignore 신규 생성 — .env, data/rag_project.db*, logs/*.log 버전 관리 제외 | kslee | claude |
+| 20260417 | 1116 | v5.0.4 | tools/classify_all.py 구현 — PDFAnalyzer + StrategySelector 배치 실행, CSV 저장 | kslee | claude |
+| 20260417 | 1125 | v5.0.5 | tools/evaluate.py 구현 — DB 집계, 9개 평가 기준 측정, Markdown 보고서 자동 저장 | kslee | claude |
+| 20260417 | 1125 | v5.1.1 | 이슈 P2-1 수정 — evaluate.py 처리 시간 계산 오류. created_at(KST)/updated_at(UTC) 타임존 혼재 → process_logs ANALYZE→INDEXING 간격 측정으로 변경 | kslee | claude |
+| 20260417 | 1125 | v5.1.2 | 이슈 P2-2 수정 — DIGITAL_EXTRACT_MULTI 품질 임계값 ≥0.99 → ≥0.95 (한국어 문서 기준), ≥0.99는 영문 논문 기준으로 별도 명시 | kslee | claude |
+| 20260417 | 1129 | v6.0.0 | Phase 10 E2E 검증 완료. ValidationReport_Phase10.md 정식 작성 (37건 INDEXED, 9/9 기준 통과), TechWorkLog.md Stage 9 추가, Development_Plan v5.1 → v6.0 업데이트 | kslee | claude |
+| 20260417 | 1144 | v0.9.2 | 로그 기능 추가. src/log_setup.py 신규 구현 — logs/log_yyyymmdd_hhmmss.log 자동 생성, 파일+콘솔 핸들러, 중복 초기화 방지. app.py에 startup 초기화 연결 | kslee | claude |
+| 20260417 | 1153 | v6.1.0 | Development_Plan v6.0 → v6.1 업데이트 — 로그 기능, CHANGELOG.md 내용 반영 (§2, §6, §7, §11, §13 갱신) | kslee | claude |
+| 20260417 | 1354 | v0.9.3 | PDF 뷰어 네비게이션 버튼 재배치 — ◀/▶ 버튼을 네비게이션 바 양끝(문서 위쪽)으로 이동. 문서 표시 영역 100% 확보. 7열 구성: [◀][⏮][입력][/총][전략][⏭][▶] | kslee | claude |
+| 20260417 | 1421 | v0.9.4 | OCR 텍스트 리플로우: reflow_ocr_text() 추가, 단락 내 줄바꿈→공백 연결, 하이픈 이음 처리. (플로팅 버튼 시도 후 롤백) | kslee | claude |
+| 20260417 | 1425 | v0.9.4r | 페이지 이동 버튼 v6.1.0 롤백 — 7열 nav bar [⏮][◀][입력][/총][전략][▶][⏭] 원복, CSS/JS 플로팅 코드 제거 | kslee | claude |
+| 20260417 | 1439 | v0.9.5 | PDF 뷰어 문단 구조 보존 전면 재설계 — ①_words_to_text_with_paragraphs() 공통 함수화(DIGITAL_EXTRACT·MULTI 양쪽 적용), ②_plumber_page_to_text()에 layout=True 우선 시도(pdfminer 자동 빈 줄), ③DIGITAL_EXTRACT_MULTI 좌/우 컬럼도 문단 감지 적용 | kslee | claude |
+| 20260417 | 1515 | v0.9.6 | 학술 논문 헤더 감지 추가 — _extract_academic_header() 구현. page.chars 폰트 크기 분석(body×1.5=제목, body×1.05=저자)으로 상태 기계(pre→title→author→body), extract_words()로 텍스트 조립. [제목]/[저자]/[본문] 레이블 분리 출력 | kslee | claude |
+| 20260417 | 1529 | v0.9.7 | 헤더·푸터 감지 및 멀티컬럼 문장 연결 — ①_split_header_footer(): 상단8%/하단7% y좌표 기준 분리, ②_words_one_line(): 헤더·푸터 한 줄 표시, ③_connect_columns(): 좌→우 컬럼 경계 종결기호+소문자 시작 판단으로 연속 문장 자동 연결. _extract_academic_header·_plumber_page_to_text·DIGITAL_EXTRACT_MULTI 세 경로 모두 적용 | kslee | claude |
+| 20260417 | 1540 | v0.9.8 | [소속] 섹션 분리 — _extract_academic_header()에 소속 기관 감지 추가. 1차: page.lines에서 왼쪽 절반 수평 구분선(너비<페이지절반, y>60%) 탐지, 2차 폴백: body_size-1.5pt 미만 소형 폰트 블록 감지. 구분선 아래 왼쪽 컬럼 단어를 [소속]으로 분리, 본문에서 제외 | kslee | claude |
+| 20260417 | 1554 | v0.9.9 | DIGITAL_EXTRACT_MULTI 저자 잘림 수정 — 컬럼 분리 전 _extract_academic_header() 먼저 시도. 제목/저자가 전체 폭인 페이지(page 0)에서 gap_x 감지되어도 학술 헤더 우선 처리, 저자 이름이 좌/우 컬럼으로 나뉘는 문제 해결 | kslee | claude |
+| 20260427 | 1155 | v0.9.10 | 좌측 컬럼 전용 제목/저자 형식 처리. ①layout_splitter.py: side_mean < 0.01 가드 추가(잉크 거의 없는 페이지 false positive 방지). ②app.py _extract_academic_header(page, gap_x) 확장 — gap_x 파라미터 추가: 좌측 컬럼 chars만으로 상태 기계 실행, HARD_TOP=4% 섹션 라인 제외, title_thresh=최대폰트×0.95, full_width_title 판별(좌측 전용 vs 전체 폭), in_skip() 컬럼 조건 추가, 서브스크립트 오탐 방지 최소 8pt 조건. ③extract_text_page: gap_x 먼저 계산 후 academic header에 전달. 검증: ISSCC 2016 HBM DRAM 논문(좌측 전용 제목/저자) · HBM3 Interface 논문(전체 폭 제목/저자) 모두 정상 | kslee | claude |
+| 20260427 | 1215 | v0.9.11 | DIGITAL_EXTRACT_MULTI 2단 본문 읽기 순서 보정 (1차). 본문 시작 지점을 슬라이딩 방식으로 감지하여 왼쪽 컬럼을 먼저 조합하도록 src/ocr_engine.py 수정. app.py PDF/OCR 비교 뷰어도 동일 조합 로직 재사용 | kslee | OpenAI |
+| 20260427 | 1302 | v0.9.12 | DIGITAL_EXTRACT_MULTI 2단 읽기 순서 최종 수정 — 제목/저자가 왼쪽 단에만 있는 논문 처리. ①_find_body_start_y(): 슬라이딩 윈도우(3줄)로 양쪽 컬럼 단어 수 충족 시점을 본문 시작 y로 탐지. ②_compose_multicol_text(): pre-body 구간에서 양쪽 컬럼에 걸친 줄만 헤더로 처리, 나머지는 좌/우 본문으로 분리 → 오른쪽 단 도입부가 왼쪽 앞에 나오는 문제 해결. app.py도 _compose_multicol_text 재사용 | kslee | OpenAI |
+| 20260427 | 1405 | v0.9.13 | preprocessor.py 줄바꿈 정규화 고도화. normalize_hard_linebreaks() 신규 구현 — ①소프트랩 줄 병합(_should_merge_soft_wrap: 하이픈 이음, 소문자 시작, 긴 줄 등 조건), ②리스트·캡션·단락 제목 줄 보존(_should_keep_linebreak), ③노이즈 줄 제거(_NOISE_LINE_RE: 의미없는 특수문자만 있는 줄). Preprocessor._clean()에 normalize_hard_linebreaks() 통합. app.py: preprocessor에서 normalize_hard_linebreaks 임포트, reflow_ocr_text() → normalize_hard_linebreaks() 위임 호출. test_preprocessor.py TestLayoutAwareLinebreaks 클래스 추가, test_ocr_engine.py _compose_multicol_text · _find_body_start_y 단위 테스트 추가 | kslee | claude |
+| 20260527 | 2205 | —      | CHANGELOG.md 한글 인코딩 깨짐 복구 — Codex 작성본(CHANGELOG_err_latest.md·CHANGELOG_fixed2.md)의 EUC-KR/CP949 오염으로 깨진 한글을 UTF-8 기준으로 복원. v0.9.10~v0.9.13 누락 항목 추가 기입 | kslee | claude |
+| 20260527 | 2231 | v0.9.14 | 좌→우 컬럼 경계 문장 자동 연결. ocr_engine.py: _join_columns() 신규 구현 — 좌 컬럼 마지막 단락이 .?!; 없이 끝나고 우 컬럼 첫 단락이 소문자 시작이면 공백으로 이어붙임(하이픈 종결 시 하이픈 제거 후 연결). _compose_multicol_text()에서 "\n\n" 대신 _join_columns() 사용. app.py: _compose_multicol_text 도입 전 잔류하던 dead code(좌·우 분리 후 _connect_columns 호출 뒤 즉시 덮어쓰던 621~629줄) 제거 | kslee | claude |
+| 20260527 | 2236 | v0.9.15 | 디지털 PDF 워터마크 자동 제거. ocr_engine.py: _luminance() 신규 — DeviceGray·RGB·CMYK 색상값을 밝기(0~1)로 변환. filter_watermarks(page) 신규 — ①upright=False 문자(대각선 스탬프) 제거, ②non_stroking_color 밝기>0.85 문자(연한 배경 워터마크) 제거, pdfplumber page.filter() 활용. _extract_digital·_extract_digital_multicol 양 경로에 적용. app.py: DIGITAL_EXTRACT·DIGITAL_EXTRACT_MULTI 뷰어 경로에도 filter_watermarks 적용 | kslee | claude |
+| 20260527 | 2244 | v0.9.15a | filter_watermarks() 워터마크 감지 강화. ①stroking_color도 밝기 체크 추가(획 전용 렌더 워터마크 대응). ②light_threshold 0.85→0.80으로 낮춰 중간 회색 워터마크 포함. ③폰트 크기>30pt AND 밝기>0.15 조건 추가 — CTM 회전으로 upright=True인 대형 스탬프 낱글자(T·S 등) 제거. ※진단 결과 JEDEC 워터마크는 순수 검정(0.0)·upright=True·12pt로 색상·회전 필터로 제거 불가 확인 — 페이지 단위 스킵 방안은 사용자 판단에 따라 보류 | kslee | claude |
+| 20260528 |      | —      | v0.9.15a 최종 동작 확인 — filter_watermarks() 회전 스탬프·연한 배경·대형 낱글자 제거 정상 동작 확인. v0.9.15a 기준 확정. JEDEC 법적 고지 텍스트(순수 검정·upright=True·12pt)는 Phase 11 전처리 후처리(remove_jedec_notice)로 별도 해결 예정 | kslee | claude |
+| 20260608 | 13:11 | v1.00 | Phase 11 시작 — asset_pipeline.py 다단 컬럼 인식 추가: _extract_digital_with_assets에 _find_column_gap 적용, _build_digital_page_text_multicol 신규 구현 (좌·우·스패닝 자산 분류 후 _join_columns 연결). _inject_caption_refs 캡션 처리 개선: 캡션 라인을 ref_tag으로 교체(캡션은 DB caption 컬럼 보존), 캡션이 문장 사이에 끼어 있을 때 앞뒤 문장 재연결 후 ref_tag을 문장 끝에 배치. (초기 기록: asset_db.py·ocr_engine.py·pipeline.py·app.py 초기 Phase 11 구조 포함) | kslee | claude |
+| 20260608 | 13:45 | v1.01 | INDEXED 문서 강제 재처리 기능 추가 — database.py: force_reset_for_reprocess() 신규 (상태 무관 NEW 초기화). app.py: do_force_reprocess() 추가, INDEXED 문서 행에 "🔁 강제 재처리" 버튼 표시 | kslee | claude |
+| 20260608 | ~14:30 | v1.02 | 다단 컬럼 캡션-문장 연결 초기 구현 — asset_pipeline.py: _join_columns_strip_captions() 신규 (좌 컬럼 끝 caption 제거→_join_columns 연결→캡션 재삽입), _compose_multicol_text_with_captions() 신규. no-assets 다단 경로·_build_digital_page_text_multicol 호출 교체. ※우 컬럼 런닝헤더·ref_tag 미처리로 연결 미완성 | kslee | claude |
+| 20260608 | ~15:00 | v1.03 | 다단 컬럼 문장 연결 완성 — _join_columns_strip_captions(): 우 컬럼 머리에서 런닝헤더("…" 종결)·ref_tag·caption 단락도 제거, n_left 기준으로 재삽입 위치 수정(joined_paras[:n_left] + stripped + joined_paras[n_left:]). _inject_caption_refs(): 이전 비어있지 않은 줄이 ref_tag이면 중복 저장 스킵. Fig-2 논문 검증: "…equal to the phase difference between…" 문장 올바르게 연결 확인 | kslee | claude |
+| 20260608 | 16:38 | v1.04 | DOCX·PPTX 문서 지원 추가 — ①database.py: SourceType.DOCX·PPTX, OcrStrategy.DOCX_EXTRACT·PPTX_EXTRACT 추가. ②file_scanner.py: .docx·.pptx 확장자 탐지 추가. ③pdf_analyzer.py: analyze() 파일 확장자 디스패치, _analyze_docx()·_analyze_pptx() 신규 (언어·수식 감지, 항상 SINGLE_COLUMN). ④strategy_selector.py: DOCX·PPTX 소스 타입 분기 추가. ⑤ocr_engine.py: _extract_docx_pages()·_extract_pptx_pages() 신규 (python-docx/python-pptx 텍스트 추출). ⑥asset_pipeline.py: process_digital() 확장자 디스패치, _process_docx()·_process_pptx() 신규 (임베디드 이미지 DB 저장, _inject_caption_refs 적용), _to_png_safe() 유틸 추가. ⑦pipeline.py: DOCX·PPTX를 DIGITAL 계열로 라우팅. ⑧requirements.txt: python-docx·python-pptx 추가 | kslee | claude |
+| 20260608 | 16:58 | v1.05 | Streamlit 앱 성능 최적화 — DB 쿼리 82회→3회 감소. ①database.py: get_all_logs_grouped() 신규 (전체 로그 단일 쿼리). ②asset_db.py: count_all_assets() 신규 (전체 자산 카운트 단일 쿼리). ③app.py: load_documents() TTL 5s→30s, load_all_logs() 신규(단일 배치, TTL 30s), load_asset_counts() 모듈 레벨 재작성(count_all_assets() 사용), tab_assets 로컬 함수 제거, refresh_data() 전체 캐시 클리어→3개 함수 선택 클리어 개선, load_logs() 호출 3곳 → load_all_logs().get() 교체 | kslee | claude |
+| 20260608 | 18:24 | v1.06 | CHANGELOG 개정 이력 시각 정보 보완 — v1.00 초기 기록(~1430)을 13:11로 수정(버전별 주요 변경 요약 기준). v1.04 근사값(~16:10)을 pipeline.py mtime(16:38:06) 기준 16:38로 수정. 개정 이력표에 v1.01~v1.05 항목 누락 보완. v1.02·v1.03 시각은 asset_pipeline.py 후속 덮어쓰기로 복원 불가(근사값 유지) | kslee | claude |
+| 20260609 | 10:49 | v1.07 | pypdfium2 access violation 방어 처리 — ocr_engine.py: _get_page_images()에 문서 열기 및 페이지 단위 try/except 추가, 실패 페이지는 빈 흰 이미지(1240×1754)로 대체. pdf_analyzer.py: _get_page_images() 루프를 페이지 단위 try/except로 분리, 실패 페이지 건너뜀. 원인: 특정 한국어 PDF(주요국과 환경…)에서 pypdfium2가 access violation 발생 | kslee | claude |
+| 20260609 | 11:11 | v1.08 | app.py tesseract_cmd 속성명 오류 수정 — app.py:658 `app_config.tesseract_cmd` → `app_config.ocr_tesseract_cmd` 수정 (Config 실제 속성명과 불일치). 값 없을 때 덮어쓰지 않도록 조건문 추가 | kslee | claude |
+| 20260609 | 11:17 | v1.09 | DOCX·PPTX 뷰어 "PDF를 열 수 없습니다" 오류 수정 — ①get_pdf_page_count(): DOCX는 1, PPTX는 슬라이드 수 반환(pypdfium2 우회). ②extract_text_page(): DOCX_EXTRACT·PPTX_EXTRACT 전략 분기 추가(슬라이드 단위 텍스트 추출). ③render_pdf_viewer() 좌측 패널: 확장자별 분기 — PDF는 기존 이미지 렌더링, DOCX·PPTX는 "원본 미리보기 미지원" 안내 표시 | kslee | claude |
+| 20260609 | 11:23 | v1.10 | .docx 위장 HTML 파일 텍스트 추출 폴백 추가 — ocr_engine.py: _extract_docx_pages()에 python-docx PackageNotFoundError 시 _extract_html_as_docx_pages() 폴백 호출. _extract_html_as_docx_pages() 신규: style·script 제거 후 HTML 태그 Strip, 엔티티 변환. 원인: JESD235·JESD238A .docx가 실제 ZIP(OOXML)이 아닌 Word HTML export 파일(매직바이트 3C 21=<!DOCTYPE) | kslee | claude |
+| 20260609 | 11:26 | v1.11 | app.py extract_text_page DOCX_EXTRACT 분기 수정 — python-docx 직접 호출 대신 OcrEngine()._extract_docx_pages() 재사용하여 HTML 폴백 로직 공유 (뷰어에서도 Package not found 오류 재발 방지) | kslee | claude |
+| 20260609 | 11:29 | v1.12 | 온라인 변환기 웹페이지 HTML 거부 — _extract_html_as_docx_pages()에 Word HTML export 판별 추가(mso- 속성·Microsoft Word 메타 체크). 웹페이지 HTML은 빈 결과 반환하여 REVIEW_REQUIRED 처리. 원인: JESD235·JESD238A .docx가 온라인 변환 사이트 HTML 페이지로 판명 | kslee | claude |
+| 20260609 | 11:50 | v1.13 | 뷰어 텍스트에서 Fig./Table 캡션 인라인 제거 — app.py: _strip_inline_captions() 신규 구현(캡션 라인을 제거하고 분리된 문장을 연결). DIGITAL_EXTRACT·DIGITAL_EXTRACT_MULTI extract_text_page() 반환값에 적용. 원인: 뷰어는 PDF 직접 추출이므로 pipeline의 _inject_caption_refs가 적용되지 않아 Fig. 2 캡션이 문장 사이에 노출됨 | kslee | claude |
+| 20260609 | 12:05 | v1.14 | 그림 참조 문구를 캡션으로 오탐 방지 — app.py _strip_inline_captions()·asset_pipeline.py _FIGURE_CAPTION_RE·_TABLE_CAPTION_RE 정규식 개선: 기존 `[\d\-\.]+` → `\d+(?:[-\.]\d+)*\s*[\.:]`으로 변경. 숫자 뒤에 마침표·콜론이 없으면(예: "Fig. 3 illustrates...") 캡션으로 처리하지 않고 문장에 포함 | kslee | claude |
+| 20260609 | 12:20 | v1.15 | "Fig. 3 illustrates..." 문장 줄바꿈 미연결 수정 — preprocessor.py _CAPTION_RE 개선: `fig\.\s*\d+` → `fig\.?\s*\d+(?:[-\.]\d+)*\s*[\.:]`. 기존 패턴이 "Fig. 3 illustrates..."를 캡션으로 오탐 → _should_keep_linebreak()가 True 반환 → normalize_hard_linebreaks()가 줄 병합 차단. 마침표·콜론 필수 조건 추가로 참조 문구는 일반 문장으로 처리되어 소프트랩 줄바꿈 정상 병합 | kslee | claude |
+| 20260609 | 16:18 | v1.16 | Phase 12 구현 — 문서 구조(헤더·본문·푸터) DB 분리 저장 및 뷰어 DB 우선 조회. src/page_db.py 신규(document_metadata·page_contents 테이블, PageDatabase 싱글턴). src/database.py initialize()에 _DDL 통합. asset_pipeline.py: _extract_digital_with_assets()를 헤더/본문/푸터 3분리 반환으로 개편, _process_docx()·_process_pptx() page_db 저장 추가, _extract_simple_title() 신규, process_digital()에 page_db 저장 및 delete_all() 호출. app.py: page_db import, extract_text_page()에 doc_id 파라미터 추가 및 DB-first 조회 로직 삽입. ocr_engine.py: _split_header_footer_words() 신규(y좌표 비율 기반 헤더 8%/푸터 7% 분리) | kslee | claude |
+| 20260609 |      | v1.17 | 아래첨자/위첨자 단어 줄 분리 수정 — ocr_engine.py: _group_words_by_line()에 서브스크립트 병합 패스 추가(y-gap < line_height×3 AND 인접 단어 x-gap ≤ 1.5pt), _join_line_words() 신규(x-gap < 1.0pt 이면 공백 없이 연결), _words_to_text()·_words_to_text_with_paragraphs()에서 _join_line_words 사용. 원인: "tCK"에서 아래첨자 "CK"가 y-offset 4.08pt로 별도 추출되어 독립 줄에 배치됨 → per-word 인접 판정으로 정확히 병합 ※시각 확인불가(ocr_engine.py 이후 덮어씀) | kslee | claude |
+| 20260609 | 21:26 | v1.18 | 다중 소수점 그림번호(18.2.6) 캡션 오탐 수정 — 캡션 정규식에 `(?![.-]\d)` 부정형 전방탐색 추가: "Figure 18.2.6 shows..."가 백트래킹으로 "Figure 18.2."에 잘못 매칭되어 _should_keep_linebreak()=True → 소프트랩 병합 차단. preprocessor.py·app.py·asset_pipeline.py 3곳 동일 수정. "performance\nsummary." 문장 정상 연결 확인 | kslee | claude |
+| 20260609 | 22:08 | v1.19 | 컬럼 경계 캡션 선행 문장 연결 수정 — ocr_engine.py: `_COL_CAP_RE` 모듈 상수 추가(Fig./Table 캡션 검출). `_join_columns()` 재작성: 우 컬럼 앞의 그림·표 캡션 단락을 분리(right_caps)한 뒤 첫 비캡션 단락을 병합 대상으로 사용(조건B). 결과: "mentioned in" → "Fig. 4." 오병합 제거, "mentioned in Section II." 올바른 연결. 캡션은 병합 후 텍스트 뒤에 배치 | kslee | claude |
+| 20260610 | 10:05 | v1.20 | `_find_body_start_y` 런닝헤더 오탐 수정 — ocr_engine.py: 알고리즘을 슬라이딩 윈도우 합산 방식에서 **줄별 양쪽 검증** 방식으로 전면 교체. page_height 파라미터 추가(미전달 시 words에서 추정), 상단 10% 스킵(런닝헤더 제외). WINDOW=5 연속 줄에서 각 줄 양쪽 ≥1단어 이상인 첫 y를 본문 시작으로 탐지. 효과: JSTS 논문 "The emerging...generation 3 (HBM3) interfaces" 분리 문제 해결 — 런닝헤더(y=46) → 오탐 body_start_y=45 → 우 컬럼에 제목/저자 메타데이터 혼입되던 근본 원인 수정. tests/test_ocr_engine.py: 테스트 데이터 2줄로 WINDOW=5 미달 → `body_start_y is None` 으로 단언 수정 | kslee | claude |
+| 20260610 | 11:46 | v1.21 | `_find_body_start_y` Abstract 영역 2단 인식 오탐 수정 — 근본 원인: 제목(2줄)+저자(2줄)+본문 첫 줄 = 5줄 연속으로 WINDOW=5 조건이 충족되어 first_y=117(제목 y) 오탐. 해결: **줄 간격 GAP_THRESHOLD=30pt 초과 시 섹션 구분으로 카운터 리셋** 추가(WINDOW=5→3, MIN_EACH=2 유지). 제목↔저자(36pt 간격)·저자↔본문(69pt 간격)에서 각각 리셋 → body_start_y=249(Abstract 시작) 정상 탐지. 검증: JSTS 논문 Abstract(좌 컬럼)와 Introduction(우 컬럼)이 올바르게 2단 분리 처리됨 | kslee | claude |
+| 20260610 | 12:43 | v1.22 | `_compose_multicol_text` 좌 컬럼 각주 분리 — 소속·수신일 등 논문 하단 각주가 좌→우 컬럼 join에 끼어들어 "Corresponding Author : Jaeha Kim (HBM3) interfaces require..." 오병합 발생. 해결: 페이지 하단 50% 구간에서 줄 간격 35pt 이상인 첫 지점을 각주 시작으로 감지, 각주를 left_body에서 분리 후 맨 뒤에 배치(page_height 파라미터 추가, 미전달 시 words에서 추정). 결과: left_main 끝 "generation 3" + right 시작 "(HBM3) interfaces require..." 올바르게 연결 | kslee | claude |
+| 20260610 | 15:59 | v1.23 | preprocessor.py 목차·Features 개행 소실 수정 — ①`_LIST_ITEM_RE`에 em-dash(—)·en-dash(–)·bullet(•)·중점(·) 추가: "— Up to 1 TB/s..." 형태 글머리를 리스트 항목으로 인식하지 못해 길이≥45자 조건(`len(prev) >= 45`)에 걸려 합쳐지던 문제 해결. ②`_TOC_ENTRY_RE` 신규(`^\d[\d.]*\s+\w`): 섹션 번호(1, 1.1, 3.2.1)로 시작하는 줄 두 개가 연속할 때 개행 유지. "3 Terms, definitions, and abbreviated terms 2" → "3.1 Terms and definitions 2" 조합이 단어수 조건(≥6 and ≥3)에 걸려 합쳐지던 문제 해결. `_should_keep_linebreak()`에 `_TOC_ENTRY_RE` 매칭 조건 추가. test_preprocessor.py: em-dash·TOC·bullet 변형 케이스 3개 테스트 추가 | kslee | claude |
+| 20260615 | 1548 | v1.24 | 한국어 SCANNED 문서 OCR 한글 인식 불량 수정 (4가지 연쇄 버그). ①pdf_analyzer.py `_detect_languages()`: fallback_path 파라미터 추가 — 텍스트 없는 SCANNED 문서에서 파일명 한글 여부로 `["kor","eng"]` 반환(기존 `["eng"]` 기본값 오류). ②pdf_analyzer.py `_detect_formula_scanned()`: 소형 윤곽 누적(`formula_hints += 0.2`) 제거 — 108 DPI에서 한글 자모가 작은 사각형 윤곽으로 오탐지되어 수식 있음으로 잘못 분류되던 버그. ③strategy_selector.py `_decide()`: `has_kor` 조건 추가 — 한국어 포함 문서는 OCR_FORMULA·OCR_MULTI_FORMULA 전략 제외(PSM=6 수식 마스킹이 한글 텍스트 블록을 흰색으로 덮는 치명적 오탐지 방지). ④ocr_engine.py `_get_page_images()`: dpi_scale 기본값 2.0→4.17 (144 DPI→300 DPI, 한글 인식률 향상). formula_handler.py `_cluster_symbols()`: min_count 4→20 (한글 텍스트 줄이 수식 클러스터로 오마스킹 방지) | kslee | claude |
+| 20260615 | 1634 | v1.25 | OCR 문장 단편화(scattering) 수정 — strategy_selector.py: OCR_ENG·OCR_KOR_ENG·OCR_JPN 전략 PSM 3→6 변경. 원인: PSM=3(자동 분할)은 동일 단락 내 텍스트 블록 사이에도 `\n\n` 삽입 → normalize_hard_linebreaks()가 단락 구분자로 처리하여 문장 분리. PSM=6(단일 블록)은 `\n`만 출력 → _should_merge_soft_wrap() 정상 적용으로 소프트랩 병합. 안전: _ocr_adaptive_pages()가 OpenCV로 컬럼 분리 후 Tesseract에 단일 컬럼 이미지 전달하므로 PSM=6 적합 | kslee | claude |
+| 20260616 | 1631 | v1.26 | 한글 OCR Tesseract 개선 적용 — ①strategy_selector.py: OCR_ENG·OCR_KOR_ENG·OCR_JPN에 `oem: 1`(LSTM 전용 명시) 추가. ②ocr_engine.py: `import cv2` 추가, `_enhance_for_ocr()` 신규(cv2.ADAPTIVE_THRESH_GAUSSIAN_C, block=31, C=10), `_ocr_adaptive_pages()`에 이진화 전처리 적용. 개선 측정(주요국과 환경…pdf, 13페이지): 전체 한글 비율 73.7%→73.4%(측정 오차 수준), 차트·그래프 페이지에서 인식 품질 향상 확인. 현 tessdata 표준(11.9 MB)이 주 병목 — tessdata-best 설치 시 추가 10~15%p 개선 가능 | kslee | claude |
+| 20260616 | 2308 | v1.27 | EasyOCR 파이프라인 통합 — ocr_engine.py: `_easy_readers` 캐시 추가, `_get_easy_reader()` 신규(언어 조합별 Reader 캐싱·GPU 자동 감지), `_easyocr_pages()` 신규(paragraph=True 단락 단위 추출). run()에 OCR_KOR_ENG→EasyOCR(ko+en), OCR_JPN→EasyOCR(ko+en+ja) 라우팅 추가. 3엔진 비교(3페이지): EasyOCR 72.4% > Tesseract 71.7% > PaddleOCR 70.5%. GPU 처리 시간 — EasyOCR GPU 10.7s(로딩 포함, 이후 재실행 ~3.5s/3페이지) vs CPU 36.8s(3.4배 차이). OCR_ENG·OCR_MULTI_COL·OCR_FORMULA는 Tesseract 유지 | kslee | claude |
+| 20260617 |      | v1.28 | document_assets ref_tag UNIQUE 충돌 수정 — asset_db.py: UNIQUE INDEX `idx_da_reftag`를 `(ref_tag)` 단일에서 `(document_id, ref_tag)` 복합으로 변경(마이그레이션 자동 적용), `save_asset()` INSERT → `INSERT OR REPLACE` 전환. 근본 원인: ref_tag가 문서 내 seq_in_doc 기준이라 다른 문서도 동일 태그(예: [TABLE_001]) 생성 → 두 번째 문서 처리 시 UNIQUE constraint failed. app.py APP_VERSION 1.27→1.28 | kslee | claude |
+| 20260617 |      | v1.29 | 웹 UI EasyOCR 결과 미표시 버그 수정(2건 동시). ①asset_pipeline.py: `process_scanned()`가 `page_db.save_page_content()` 호출 누락 → 신규 스캔 문서의 EasyOCR 결과가 page_contents DB에 저장되지 않아 웹 UI가 항상 Tesseract 결과를 표시하던 문제. 수정: `n_assets` 집계 후 `_pdb.delete_all()` + 페이지별 `save_page_content()` + `save_document_metadata()` 추가. ②app.py: `extract_text_page()` 폴백 경로(DB miss 시)가 전략 무관하게 Tesseract 하드코딩 → OCR_KOR_ENG·OCR_JPN 전략일 때 EasyOCR 분기 추가(pypdfium2 렌더→easyocr.Reader→readtext), 기존 Tesseract 경로는 나머지 전략에 유지. APP_VERSION 1.28→1.29 | kslee | claude |
+| 20260617 |      | v1.30 | EasyOCR 한국어 오인식 후처리 보정 추가 — src/ocr_postprocess.py 신규: `_WORD_FIXES` 사전(세그만트→세그먼트, 헬스레어·헬스웨어→헬스케어, 스마트포→스마트폰, 옛지→엣지, 용용적→응용적, 학신적→혁신적, 끈 노이만→폰 노이만, 활용월→활용될, 소비률→소비를 등 15개 패턴) + `_JOSA_RE` 정규식(종성 있는 음절 뒤 조사 올→을, 름→를 교정). ocr_engine.py: `_easyocr_pages()` 반환 직전 `fix_easyocr_korean()` 적용. app.py: 상단 import 추가, EasyOCR 폴백 경로 반환값에 `fix_easyocr_korean()` 적용. APP_VERSION 1.29→1.30 | kslee | claude |
+| 20260618 |      | v1.31 | EasyOCR 스캔 문서 Claude API 후처리 교정 추가 — src/claude_corrector.py 신규: `correct_ocr_page(text, api_key, model, max_tokens, timeout)` 구현(시스템 프롬프트: 받침 오인식·자모 혼용·외래어 오표기·특수문자 삽입 교정 지시, 80자 미만 페이지 스킵, anthropic 미설치·API 실패 시 원본 반환). ocr_engine.py: `_claude_correct_pages()` 신규, `run()`의 OCR_KOR_ENG·OCR_JPN 경로에 `claude_correction_enabled AND api_key` 조건부 적용. config.py: `claude_correction_enabled·api_key·model·max_tokens·timeout` 속성 추가(ANTHROPIC_API_KEY 환경변수 우선). config.yaml: `claude:` 섹션 추가(enabled: false 기본값, model: claude-haiku-4-5-20251001). .env: `ANTHROPIC_API_KEY=` 항목 추가. requirements.txt: `anthropic>=0.40.0` 추가. APP_VERSION 1.30→1.31 | kslee | claude |
+| 20260618 | 14:09 | —     | doc/RAG_Pipeline_Manager_Manual.md 신규 작성 — Streamlit UI 전체 사용 설명서. 앱 시작 방법, 사이드바(파이프라인 실행·새로고침·전체 재OCR), 요약 지표 5개, 처리 상태 코드 13개, 탭별 기능(전체목록/검토/실패/대시보드/자산/진단), PDF 뷰어 네비게이션, 주요 워크플로우 3종, 설정 파일 위치 포함 | kslee | claude |
+| 20260618 |      | v1.32 | LLM OCR 교정 Google Gemini 지원 추가 — src/llm_corrector.py 신규: `correct_ocr_page(text, provider, api_key, model, max_tokens, timeout)` 공통 인터페이스, `_correct_claude()`·`_correct_gemini()` 분리 구현(google-generativeai: `GenerativeModel.generate_content()`). src/claude_corrector.py: llm_corrector 위임 shim으로 교체(하위 호환 유지). ocr_engine.py: `_claude_correct_pages()` → `_llm_correct_pages()` 리네임, provider/api_key/model/timeout 동적 선택(API 키 미설정 시 교정 생략 경고). config.py: `claude_correction_enabled` 제거 → `llm_correction_enabled·llm_provider·gemini_api_key·gemini_model·gemini_timeout` 추가, 구 `claude:` 섹션명 하위 호환 지원. config.yaml: `claude:` → `llm_correction.provider/claude{}/gemini{}` 구조 재편. .env: `GOOGLE_API_KEY=` 추가. requirements.txt: `google-generativeai>=0.8.0` 추가. APP_VERSION 1.31→1.32 | kslee | claude |
+| 20260618 | 14:51 | v1.33 | 로그 파일 생성 정책 개선 — src/log_setup.py: _DateRotatingFileHandler 신규 구현(FileHandler 상속, emit()에서 날짜 체크 → 자정 후 첫 기록 시 새 날짜_hhmmss 파일로 자동 전환, thread-safe acquire/release). setup_logging(): _initialized 체크를 파일 핸들러에도 적용(기존은 콘솔 핸들러만 중복 방지 → 매 호출마다 파일 핸들러 추가·새 파일 생성 버그 수정). 새 파일 생성 조건: ①프로세스 최초 실행(새 세션) ②자정 날짜 변경만. Streamlit rerun 등 중복 호출은 기존 파일에 append. _file_handler 모듈 전역 추가, setup_logging() 재호출 시 current_path 반환 | kslee | claude |
+| 20260619 | 11:15 | v1.34 | 전체 파일 목록 분류 정보 인라인 표시 — app.py: render_document_row() label에 source_type 분석 완료 시 Source·Layout·언어·수식 정보 추가 표시(`│ DIGITAL · 다단 · kor+eng · 수식X` 형식). MULTI_COLUMN→`다단`, SINGLE_COLUMN→`단일` 축약, has_formula True/False → `수식O`/`수식X`. 미분석 문서(source_type 없음)는 기존 파일명+상태 표시 유지 | kslee | claude |
+| 20260619 | 11:25 | v1.35 | 파일 목록 컬럼 분리 표시 — app.py: render_document_row()를 st.expander 기반에서 st.container(border=True)+st.columns 기반으로 재설계. 상태·파일명·소스·레이아웃·언어·수식 각각 별도 컬럼으로 표시. 상세정보·재처리·PDF 뷰어는 내부 expander("상세 정보 / 재처리")로 이동. 탭1(전체 문서)에 컬럼 헤더 행 추가. APP_VERSION 1.32→1.35 | kslee | claude |
+| 20260619 | 11:44 | v1.36 | 문서 행 UX 개선 — app.py: render_document_row() 재설계. ①파일명+진행상태를 st.expander 제목으로 표시(좌측 화살표로 펼치기). ②소스·레이아웃·언어·수식 분류 정보는 expander 내부 상단 4컬럼(caption)으로 배치. ③상세정보·재처리·PDF 뷰어는 동일 expander 내부에 통합. 탭1 컬럼 헤더 행 제거. APP_VERSION 1.35→1.36 | kslee | claude |
+| 20260619 | 11:50 | v1.37 | 분류 정보 상시 표시 — app.py: render_document_row()를 st.container+st.columns 구조로 재설계. 파일명·진행상태를 하나의 컬럼(좌, 2/3)에, 소스·레이아웃·언어·수식을 우측 4개 컬럼에 항상 표시. 상세/재처리는 container 하단 st.expander("상세 / 재처리")로 유지. 탭1 컬럼 헤더 행 복원. APP_VERSION 1.36→1.37 | kslee | claude |
+| 20260619 | 11:54 | v1.38 | 상세/재처리 토글 버튼 — app.py: render_document_row() 상세 영역을 st.expander에서 ▶/▼ 토글 버튼(session_state) 방식으로 교체. 버튼을 파일명 왼쪽 첫 컬럼(비율 0.4)에 배치, 클릭 시 상세 영역 펼침/접힘. 컬럼 비율 [0.4, 8.6, 1.1, 0.9, 1.4, 0.9]으로 조정. APP_VERSION 1.37→1.38 | kslee | claude |
+| 20260619 | 12:42 | v1.39 | 문서 행 높이 압축 — app.py: st.set_page_config 직후 전역 CSS 주입. ①bordered container 패딩 3px(상하)/8px(좌우)로 축소, margin-bottom 2px. ②내부 vertical/horizontal block gap 0 제거. ③column 내부 패딩 0. ④.stMarkdown p margin 0·line-height 1.25·font-size 0.875em. ⑤stCaptionContainer p margin 0·line-height 1.1. ⑥토글 버튼 height 22px·padding 0 4px·font-size 0.75em. APP_VERSION 1.38→1.39 | kslee | claude |
+| 20260619 | 12:44 | v1.40 | 토글 버튼(▶/▼) 크기 절반 축소 — app.py: 전역 CSS에 토글 버튼 전용 셀렉터 추가(첫 번째 행 첫 번째 컬럼 한정). height/min-height 22px→11px, width 20px, padding 0 2px, font-size 0.6em. 액션 버튼(재처리 등)은 22px 유지. APP_VERSION 1.39→1.40 | kslee | claude |
+| 20260619 |       | v1.41 | 토글 버튼 CSS 셀렉터 교체 — app.py: 기존 `> div:first-child` 체인 셀렉터가 Streamlit 실제 DOM과 불일치(미적용)하여 `[data-testid="column"]:first-child .stButton > button`으로 교체, `transform: scale(0.6)` 병용. 컬럼 비율 c_btn 0.4→0.2 / c_name 8.6→8.8. APP_VERSION 1.40→1.41 | kslee | claude |
+| 20260619 |       | v1.42 | 토글 버튼 폭 원복·높이만 절반 — app.py: transform 제거, 컬럼 비율 c_btn 0.2→0.4 / c_name 8.8→8.6 원복. `[data-testid="column"]:first-child .stButton > button` 셀렉터로 height 11px·min-height 11px만 유지. APP_VERSION 1.41→1.42 | kslee | claude |
+| 20260619 |       | v1.43 | 토글 버튼 높이 절반 JS 방식 교체 — app.py: CSS 셀렉터 방식 제거, `streamlit.components.v1.html` + JS `parent.document` 인라인 스타일 직접 주입으로 변경. MutationObserver로 Streamlit 재렌더링 후에도 자동 재적용. ▶/▼ 버튼 height/min-height/max-height 11px 강제 적용. APP_VERSION 1.42→1.43 — ※JS도 sandbox/CSP로 차단되어 미동작 확인 | kslee | claude |
+| 20260619 |       | v1.44 | 토글 버튼 → st.toggle 교체 — app.py: `st.button(▶/▼)` + 수동 session_state 관리를 `st.toggle(label_visibility="collapsed")`으로 대체. ON/OFF 토글 스위치 시각, 자동 상태 관리·rerun() 불필요. JS 컴포넌트 제거, components.v1 import 제거. APP_VERSION 1.43→1.44 | kslee | claude |
+| 20260619 |       | v1.45 | 토글 상단 정렬·행 간격 25% 축소 — app.py: ①첫 번째 컬럼 `align-self: flex-start` + `padding-top: 1px`으로 토글 스위치 상단 배치. ②margin-bottom 2px→1px, padding-top/bottom 3px→2px으로 행 간격 약 25% 축소. APP_VERSION 1.44→1.45 | kslee | claude |
+| 20260619 |       | v1.46 | 상단 요약·행 간격 추가 압축 — app.py: ①요약 지표 5개 st.metric 박스→한 줄 st.caption으로 교체. ②st.divider() 제거. ③tab_all st.subheader() 제거. ④bordered container padding-top/bottom 2px→1px 추가 축소. APP_VERSION 1.45→1.46 | kslee | claude |
+| 20260619 |       | v1.47 | 상단·행 간격 최대 압축 — app.py: ①st.title(h1)+columns 구조→한 줄 인라인 div(타이틀+버전+통계 단일 행)로 교체. ②검색/필터 label_visibility="collapsed"로 라벨 제거. ③bordered container margin-bottom 1→0px, padding 1→0px. APP_VERSION 1.46→1.47 | kslee | claude |
+| 20260619 |       | v1.48 | 행 간격 원인 수정·타이틀 원복·상단 여백 축소 — app.py: ①행 사이 간격의 실제 원인(부모 stVerticalBlock의 gap)을 :has() 셀렉터로 타겟(gap 2px). ②.block-container padding-top 0.75rem으로 상단 공백 축소. ③st.title 원복(h1 크기). APP_VERSION 1.47→1.48 — ※:has(> 직접자식) 셀렉터 오류로 미적용 | kslee | claude |
+| 20260619 |       | v1.49 | 행 간격 CSS 셀렉터 수정 — 실제 DOM 구조 파악: stVerticalBlock > element-container > stVerticalBlockBorderWrapper. ①.element-container:has([stVerticalBlockBorderWrapper]) margin-bottom 0. ②stVerticalBlock:has([stVerticalBlockBorderWrapper]) gap 2px. 직접자식(>) 콤비네이터 제거. APP_VERSION 1.48→1.49 — ※:has() 자체가 미지원으로 미적용 | kslee | claude |
+| 20260619 |       | v1.50 | 행 간격 CSS :has() 없이 전역 접근 — ①[data-testid="stVerticalBlock"] gap 2px 전역 적용. ②.element-container margin-bottom 0 전역 적용. ③bordered container 내부 stVerticalBlock gap 0으로 복원. APP_VERSION 1.49→1.50 — ※아주 조금만 줄어듦 | kslee | claude |
+| 20260619 |       | v1.51 | 행 간격 최대 압축 — gap 2px→0, element-container margin/padding/min-height 모두 0. APP_VERSION 1.50→1.51 — ※타이틀 클리핑 부작용 발생 | kslee | claude |
+| 20260619 |       | v1.52 | ①타이틀 클리핑 수정: element-container padding/min-height를 전역에서 제거→bordered 내부에만 적용. ②row-gap: 0 추가. ③bordered wrapper margin-top: 0 추가. APP_VERSION 1.51→1.52 — ※타이틀 클리핑 여전함(더 심해짐) | kslee | claude |
+| 20260619 |       | v1.53 | 타이틀 클리핑 근본 수정: 전역 stVerticalBlock gap/element-container margin 규칙 제거. 탭 패널([data-testid="stTabPanel"],[role="tabpanel"]) 내부에만 gap/margin 0 적용. APP_VERSION 1.52→1.53 — ※타이틀 정상 확인 | kslee | claude |
+| 20260619 |       | v1.54 | 버전 뱃지를 타이틀 우측(hc2 컬럼)에서 타이틀 바로 아래로 이동. 2컬럼 레이아웃 제거. APP_VERSION 1.53→1.54 | kslee | claude |
+| 20260619 |       | v1.55 | 버전 뱃지를 요약 행(문서 건수/상태) 오른쪽 끝으로 이동. st.caption→st.markdown flex 레이아웃으로 교체. APP_VERSION 1.54→1.55 | kslee | claude |
+| 20260619 |       | v1.56 | 문서 행 외곽선 제거: border=True→False (전체/검토/실패 탭 모두). APP_VERSION 1.55→1.56 | kslee | claude |
+| 20260619 |       | v1.57 | 문서 행 토글·파일명 수직 정렬: stHorizontalBlock align-items:center를 탭 패널 내부에 적용. APP_VERSION 1.56→1.57 — ※미세 틀어짐 잔존 | kslee | claude |
+| 20260619 |       | v1.58 | 정렬 보완: stHorizontalBlock 내 stVerticalBlock justify-content:center + 컬럼 상하 패딩 제거. APP_VERSION 1.57→1.58 | kslee | claude |
+| 20260619 |       | v1.59 | 문서 목록 스크롤 분리: 전체/검토/실패 탭의 문서 루프를 st.container(height=600, border=False)로 감쌈. 헤더·탭·검색은 고정, 목록만 스크롤. APP_VERSION 1.58→1.59 — ※취소됨 | kslee | claude |
+| 20260619 |       | v1.60 | v1.59 취소: 전체 화면 스크롤로 복원. APP_VERSION 1.59→1.60 | kslee | claude |
+| 20260619 |       | v1.61 | CHANGELOG 자동 동기화 훅 — .claude/update_changelog_hook.py 신규(개정이력표·버전별 요약 누락 감지 및 플레이스홀더 삽입). settings.local.json Stop 훅 등록. v1.51~v1.60 버전별 요약 누락분 일괄 추가. APP_VERSION 1.60→1.61 | kslee | claude |
+
+---
+
+## 날짜·시간 확인 근거
+
+| 항목 | 확인 방법 | 비고 |
+|------|-----------|------|
+| 파일 수정 시각 | PowerShell `LastWriteTime.ToString('yyyy-MM-dd HH:mm')` (KST) | 24시간제 기준 |
+| 파이프라인 실행 시각 | SQLite `process_logs.logged_at` (UTC) → KST 변환(+9h) | DB는 UTC 저장 |
+| app.py 원본 생성 시각 | **확인 불가** — 2026-04-17 11:44 수정으로 덮어써짐 | |
+| pdf_analyzer.py 초기 생성 시각 | **확인 불가** — 2026-04-16 21:09 수정본이 마지막 기록 | |
+| 최초 PowerShell 조회 오류 | `LastWriteTime` 포맷에서 오후(PM) 표기가 `????`로 깨져 오전(AM)으로 잘못 해석 | 24시간제 재조회로 수정 |
+
+---
+
+## 버전별 주요 변경 요약
+
+| 버전 | 날짜 | 시간(KST) | 주요 내용 |
+|------|------|-----------|-----------|
+| v0.0.1 ~ v0.0.2 | 20260415 | 16:04 ~ 21:36 | 기획·설계 문서 작성 |
+| v0.1.0 ~ v0.2.4 | 20260416 | 13:36 ~ 15:31 | Phase 0~1: 환경 설정, DB 초기화 |
+| v0.3.0 ~ v0.8.2 | 20260416 | 15:38 ~ 16:01 | Phase 2~8: 핵심 파이프라인 전체 구현 |
+| v5.0.0, v0.4.0 | 20260416 | 시간 미확인 | Phase 9 UI, Phase 3 PDFAnalyzer 초기 구현 |
+| Phase 10 첫 실행 | 20260416 | 16:17 | 파이프라인 37건 처리 시작 |
+| v4.1.0 ~ v4.1.3 | 20260416 | 21:09 ~ 22:37 | 레이아웃 감지 개선, DIGITAL_EXTRACT_MULTI 추가 |
+| Phase 10 완료 | 20260416 | 23:22 | 전체 37건 INDEXED |
+| v5.1.0 ~ v6.0.0 | 20260417 | 10:03 ~ 11:29 | 명세 보완, 이슈 수정, Phase 10 검증 완료 문서화 |
+| v0.9.2, v6.1.0 | 20260417 | 11:44 ~ 11:53 | 로그 기능 추가, 개발 계획서 최종 갱신 |
+| v0.9.3         | 20260417 | 13:54         | PDF 뷰어 ◀/▶ 버튼을 네비게이션 바 양끝(문서 위쪽)으로 이동, 문서 표시 영역 100% 확보 |
+| v0.9.4 ~ v0.9.4r | 20260417 | 14:21 ~ 14:25 | OCR 텍스트 리플로우(reflow_ocr_text), 플로팅 버튼 시도 후 v6.1.0 롤백 |
+| v0.9.5         | 20260417 | 14:39         | 문단 구조 보존 전면 재설계 (_words_to_text_with_paragraphs 공통화, layout=True) |
+| v0.9.6         | 20260417 | 15:15         | 학술 논문 헤더 감지 (_extract_academic_header: [제목]/[저자]/[본문] 레이블 분리) |
+| v0.9.7         | 20260417 | 15:29         | 헤더·푸터 감지(_split_header_footer), 멀티컬럼 문장 연결(_connect_columns) |
+| v0.9.8         | 20260417 | 15:40         | [소속] 섹션 분리: 각주 구분선(page.lines) 기반 소속 기관·수신일·이메일 분리 |
+| v0.9.9         | 20260417 | 15:54         | DIGITAL_EXTRACT_MULTI 저자 잘림 수정: 컬럼 분리 전 학술 헤더 우선 처리 |
+| v0.9.10        | 20260427 | 11:55         | layout_splitter.py side_mean 가드, _extract_academic_header(page, gap_x) 확장 — 좌측 전용 제목/저자 처리 |
+| v0.9.11        | 20260427 | 12:15         | DIGITAL_EXTRACT_MULTI 2단 읽기 순서 1차 보정 (Codex) |
+| v0.9.12        | 20260427 | 13:02         | _find_body_start_y · _compose_multicol_text 도입, pre-body 헤더 분리 최종 수정 (Codex) |
+| v0.9.13        | 20260427 | 14:05         | preprocessor normalize_hard_linebreaks 고도화, reflow_ocr_text 위임, 테스트 보강 |
+| —              | 20260527 | 22:05         | CHANGELOG.md 인코딩 복구 — Codex 작성본 한글 깨짐(EUC-KR 오염) 수정, v0.9.10~v0.9.13 누락 이력 추가 |
+| v0.9.14        | 20260527 | 22:31         | 좌→우 컬럼 경계 문장 자동 연결 (_join_columns), dead code 제거 |
+| v0.9.15        | 20260527 | 22:36         | 디지털 PDF 워터마크 자동 제거 (filter_watermarks: 회전 문자·연한 색상 필터) |
+| v0.9.15a       | 20260527 | 22:44         | filter_watermarks 강화: stroking_color 체크, 임계값 0.80, 대형 스탬프 낱글자 제거. ※JEDEC 워터마크는 일반 텍스트와 동일 속성 — 페이지 스킵 방안 보류 |
+| —              | 20260528 |               | v0.9.15a 최종 확인 — filter_watermarks() 정상 동작 확정. JEDEC 법적 고지 텍스트는 Phase 11 이월 |
+| v1.00          | 20260608 | 13:11         | Phase 11 시작 — asset_pipeline.py 다단 컬럼 인식, _inject_caption_refs 캡션 처리 개선 |
+| v1.01          | 20260608 | 13:45         | INDEXED 문서 강제 재처리 기능 — force_reset_for_reprocess(), "🔁 강제 재처리" 버튼 |
+| v1.02          | 20260608 | ~14:30        | 다단 컬럼 캡션-문장 연결 초기 구현 (_join_columns_strip_captions, _compose_multicol_text_with_captions) |
+| v1.03          | 20260608 | ~15:00        | 다단 컬럼 문장 연결 완성 — 우 컬럼 런닝헤더·ref_tag·caption 제거, n_left 기준 재삽입 |
+| v1.04          | 20260608 | 16:38         | DOCX·PPTX 문서 지원 추가 — SourceType·OcrStrategy 확장, _extract_docx/pptx_pages(), python-docx·python-pptx |
+| v1.05          | 20260608 | 16:58         | Streamlit 앱 성능 최적화 — DB 쿼리 82회→3회 감소 |
+| v1.06          | 20260608 | 18:24         | CHANGELOG 시각 정보 보완, v1.01~v1.05 누락 항목 추가 |
+| v1.07          | 20260609 | 10:49         | pypdfium2 access violation 방어 — 페이지 단위 try/except, 실패 페이지 빈 이미지 대체 |
+| v1.08          | 20260609 | 11:11         | app.py tesseract_cmd 속성명 오류 수정 — `app_config.tesseract_cmd` → `app_config.ocr_tesseract_cmd` |
+| v1.09          | 20260609 | 11:17         | DOCX·PPTX 뷰어 오류 수정 — get_pdf_page_count() 확장자 분기, extract_text_page() DOCX·PPTX 전략 추가 |
+| v1.10          | 20260609 | 11:23         | .docx 위장 HTML 파일 폴백 추출 — _extract_html_as_docx_pages() 신규 (JESD235·JESD238A 대응) |
+| v1.11          | 20260609 | 11:26         | app.py extract_text_page DOCX_EXTRACT 분기 — OcrEngine._extract_docx_pages() 재사용으로 HTML 폴백 공유 |
+| v1.12          | 20260609 | 11:29         | 온라인 변환기 웹페이지 HTML 거부 — Word HTML export 판별(mso- 속성), 웹페이지는 빈 결과·REVIEW_REQUIRED 처리 |
+| v1.13          | 20260609 | 11:50         | 뷰어 Fig./Table 캡션 인라인 제거 — _strip_inline_captions() 신규, DIGITAL_EXTRACT·MULTI 반환값에 적용 |
+| v1.14          | 20260609 | 12:05         | 그림 참조 문구 캡션 오탐 방지 — 캡션 정규식을 숫자 뒤 마침표·콜론 필수 조건으로 강화 |
+| v1.15          | 20260609 | 12:20         | "Fig. 3 illustrates..." 소프트랩 줄바꿈 미병합 수정 — preprocessor.py _CAPTION_RE 동일하게 강화 |
+| v1.16          | 20260609 | 16:18         | Phase 12 — 문서 구조 DB 분리 및 뷰어 DB 우선 조회. page_db.py 신규, _extract_digital_with_assets() 헤더/본문/푸터 3분리 |
+| v1.17          | 20260609 |               | 아래첨자/위첨자 단어 줄 분리 수정 — _group_words_by_line() 서브스크립트 병합, _join_line_words() 신규 ※시각 확인불가 |
+| v1.18          | 20260609 | 21:26         | 다중 소수점 그림번호 캡션 오탐 수정 — `(?![.-]\d)` 추가로 "Figure 18.2.6 shows..."가 캡션으로 오탐되어 줄 병합 차단되던 문제 해결 |
+| v1.19          | 20260609 | 22:08         | 컬럼 경계 캡션 선행 문장 연결 수정 — _join_columns() 재작성, right_caps 분리 후 첫 비캡션 단락과 병합 |
+| v1.20          | 20260610 | 10:05         | _find_body_start_y 런닝헤더 오탐 수정 — 줄별 양쪽 검증 방식으로 교체, page_height 상단 10% 스킵, WINDOW=5 |
+| v1.21          | 20260610 | 11:46         | _find_body_start_y Abstract 2단 인식 오탐 수정 — GAP_THRESHOLD=30pt 섹션 구분 리셋 추가(WINDOW=5→3) |
+| v1.22          | 20260610 | 12:43         | _compose_multicol_text 좌 컬럼 각주 분리 — 페이지 하단 50% + 줄 간격 35pt로 각주 시작 감지, 각주는 맨 뒤 배치 |
+| v1.23          | 20260610 | 15:59         | preprocessor 목차·Features 개행 소실 수정 — _LIST_ITEM_RE em-dash 추가, _TOC_ENTRY_RE 신규 |
+| v1.24          | 20260615 | 15:48         | 한국어 SCANNED OCR 한글 인식 불량 수정 — 언어 감지 fallback, 수식 오탐지 제거, OCR DPI 144→300 |
+| v1.25          | 20260615 | 16:34         | OCR 문장 단편화 수정 — OCR_ENG·OCR_KOR_ENG·OCR_JPN PSM 3→6 |
+| v1.26          | 20260616 | 16:31         | 한글 OCR Tesseract 개선 — OEM=1(LSTM 전용) 명시, 적응형 이진화 전처리 추가 |
+| v1.27          | 20260616 | 23:08         | EasyOCR 파이프라인 통합 — OCR_KOR_ENG·OCR_JPN 전략을 EasyOCR(GPU 자동 감지, Reader 캐싱)로 교체 |
+| v1.28          | 20260617 |               | document_assets ref_tag UNIQUE 충돌 수정 — UNIQUE INDEX `(ref_tag)` → `(document_id, ref_tag)` 복합, INSERT OR REPLACE |
+| v1.29          | 20260617 |               | 웹 UI EasyOCR 결과 미표시 버그 수정 — ①process_scanned() 누락 page_db 저장 추가. ②extract_text_page() 폴백 전략별 분기(EasyOCR/Tesseract) |
+| v1.30          | 20260617 |               | EasyOCR 한국어 오인식 후처리 보정 — ocr_postprocess.py 신규: 15개 패턴 사전 + 조사 정규식(올→을, 름→를) |
+| v1.31          | 20260618 |               | Claude API OCR 후처리 교정 — claude_corrector.py 신규, config.yaml claude: 섹션 추가(enabled: false), ANTHROPIC_API_KEY 환경변수, anthropic>=0.40.0 |
+| v1.32          | 20260618 |               | Google Gemini OCR 후처리 지원 추가 — llm_corrector.py 신규(Claude·Gemini 통합 디스패처), config.yaml llm_correction.provider 선택, GOOGLE_API_KEY 환경변수, google-generativeai>=0.8.0 |
+| v1.33          | 20260618 | 14:51         | 로그 파일 생성 정책 개선 — _DateRotatingFileHandler 신규(자정 날짜 변경 시 새 파일 자동 전환, thread-safe). setup_logging() 중복 파일핸들러 생성 버그 수정(Streamlit rerun 시 동일 파일 append) |
+| v1.34          | 20260619 | 11:15         | 파일 목록 분류 정보 인라인 표시 — render_document_row() expander 제목에 `│ DIGITAL · 다단 · kor+eng · 수식X` 형식으로 소스·레이아웃·언어·수식 추가 |
+| v1.35          | 20260619 | 11:25         | 파일 목록 컬럼 분리 표시 — render_document_row()를 container+columns 방식으로 재설계. 상태·파일명·소스·레이아웃·언어·수식 각각 별도 컬럼, 컬럼 헤더 행 추가 |
+| v1.36          | 20260619 | 11:44         | 문서 행 UX 개선 — 파일명+진행상태를 expander 제목으로(좌측 화살표), 분류 정보는 expander 내부 4컬럼(caption), 상세·재처리 통합 |
+| v1.37          | 20260619 | 11:50         | 분류 정보 상시 표시 — container+columns 구조로 재설계. 파일명+상태(좌 2/3)·소스·레이아웃·언어·수식(우 4컬럼) 항상 표시, 상세/재처리는 하단 expander |
+| v1.38          | 20260619 | 11:54         | 상세/재처리 ▶/▼ 토글 버튼 — 파일명 왼쪽 첫 컬럼에 배치, session_state로 펼침/접힘 제어 |
+| v1.39          | 20260619 | 12:42         | 문서 행 높이 압축 — 전역 CSS로 bordered container 패딩·gap·버튼 크기 대폭 축소, 행 높이 약 절반 수준으로 감소 |
+| v1.40          | 20260619 | 12:44         | 토글 버튼(▶/▼) 크기 절반 축소 — 첫 번째 컬럼 한정 CSS로 height 11px·width 20px, 액션 버튼은 22px 유지 |
+| v1.41          | 20260619 |               | 토글 버튼 CSS 셀렉터 교체 — `:first-child` + `transform: scale(0.6)` 방식, 컬럼 비율 c_btn 0.4→0.2 |
+| v1.42          | 20260619 |               | 토글 버튼 폭 원복·높이만 절반 — transform 제거, 컬럼 비율 원복, height 11px만 유지 |
+| v1.43          | 20260619 |               | 토글 버튼 높이 절반 JS 방식 — CSS 셀렉터 포기, JS parent.document 인라인 스타일 + MutationObserver 재적용 ※sandbox/CSP 차단으로 미동작 |
+| v1.44          | 20260619 |               | 토글 버튼 → st.toggle 교체 — ON/OFF 토글 스위치, 자동 상태 관리, rerun() 불필요 |
+| v1.45          | 20260619 |               | 토글 상단 정렬·행 간격 25% 축소 — align-self: flex-start, margin 1px, padding 2px |
+| v1.46          | 20260619 |               | 상단 요약 한 줄 압축·divider/subheader 제거·행 padding 1px |
+| v1.47          | 20260619 |               | 상단 한 줄 인라인 헤더·검색 라벨 제거·행 간격 0px |
+| v1.48          | 20260619 |               | 행 간격 원인 수정(부모 gap 2px)·타이틀 h1 원복·상단 여백 0.75rem ※셀렉터 오류 미적용 |
+| v1.49          | 20260619 |               | 행 간격 CSS 수정 — element-container:has() + stVerticalBlock:has() gap 2px ※:has() 미지원 미적용 |
+| v1.50          | 20260619 |               | 행 간격 전역 CSS — stVerticalBlock gap 2px + element-container margin 0 전역 적용 |
+| v1.51~v1.52    | 20260619 |               | 행 간격 CSS 최대 압축 시도 → 타이틀 클리핑 부작용 발생 |
+| v1.53          | 20260619 |               | 타이틀 클리핑 수정 — 전역 규칙 제거, 탭 패널 내부에만 gap/margin 0 적용. 타이틀 정상 확인 |
+| v1.54~v1.55    | 20260619 |               | 버전 뱃지 위치 이동 — 타이틀 아래 → 요약 행 오른쪽 끝(flex 레이아웃) |
+| v1.56          | 20260619 |               | 문서 행 외곽선(border=True→False) 제거 — 행 간격 실질적 감소 확인 |
+| v1.57~v1.58    | 20260619 |               | 문서 행 토글·파일명 수직 정렬 — stHorizontalBlock align-items:center + justify-content:center |
+| v1.59~v1.60    | 20260619 |               | 문서 목록 개별 스크롤 시도 후 취소 → 전체 화면 스크롤로 복원 |
+| v1.61          | 20260619 |               | CHANGELOG 자동 동기화 훅 — .claude/update_changelog_hook.py + Stop 훅 등록 |
+
+---
+
+## 이월 항목 (Phase 11 예정)
+
+| 항목 | 내용 |
+|------|------|
+| SCANNED 문서 검증 | Tesseract OCR 실 동작 검증 (샘플 없음) |
+| 수식 문서 검증 | OCR_FORMULA / OCR_MULTI_FORMULA 전략 실 검증 |
+| 다국어 샘플 확보 | 한국어(현재 3건), 일본어(0건) 추가 검증 |
+| AnythingLLM 미등록 1건 | JESD270-4_HBM4 Test Standard.pdf 재처리 |

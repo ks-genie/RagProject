@@ -1,0 +1,55 @@
+# 환경 변수 / 민감 정보
+.env
+anythingllm.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+
+# 가상환경
+.venv/
+venv/
+env/
+
+# 테스트 캐시
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 데이터 / DB
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/*.csv
+data/pdf_watch/
+
+# 로그
+logs/*.log
+logs/*.txt
+logs/*.zip
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 로컬 히스토리 / 임시 파일
+prompt_history*.md
+encoding_test_result.txt
+.omc/
+tools/*.txt
+ocr_comparison.md
+*DESKTOP*.gitignore
+-DESKTOP-*.gitignore
+
+# Claude Code 로컬 설정
+.claude/settings.local.json
