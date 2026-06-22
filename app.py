@@ -761,6 +761,14 @@ def get_pdf_page_image_bytes(file_path: str, page_num: int, scale: float = 1.5) 
         return None
 
 
+@st.cache_resource
+def _get_easyocr_reader(strategy: str):
+    """EasyOCR Reader를 앱 시작 시 한 번만 로딩 (모델 재로딩 방지)."""
+    import easyocr
+    langs = ["ko", "en"] if strategy == "OCR_KOR_ENG" else ["ko", "en", "ja"]
+    return easyocr.Reader(langs, gpu=True, verbose=False)
+
+
 @st.cache_data(ttl=600)
 def extract_text_page(file_path: str, page_num: int, strategy: str, doc_id: int = 0) -> str:
     """페이지 단위 텍스트 추출.
@@ -864,10 +872,8 @@ def extract_text_page(file_path: str, page_num: int, strategy: str, doc_id: int 
         # EasyOCR 전략 (OCR_KOR_ENG, OCR_JPN)
         # page_contents DB가 비어있는 기처리 문서도 올바른 엔진으로 표시
         if strategy in ("OCR_KOR_ENG", "OCR_JPN"):
-            import easyocr
             import numpy as np
-            langs = ["ko", "en"] if strategy == "OCR_KOR_ENG" else ["ko", "en", "ja"]
-            reader = easyocr.Reader(langs, gpu=True, verbose=False)
+            reader = _get_easyocr_reader(strategy)
             result = reader.readtext(np.array(pil_img), detail=0, paragraph=True)
             return fix_easyocr_korean("\n".join(result))
 
