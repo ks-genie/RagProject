@@ -96,7 +96,8 @@ def main() -> None:
     warnings = []
 
     # ── 1. 개정이력표 확인 ─────────────────────────────────────────────────
-    REV_HEADER = "| 날짜 | 시간 | 버전 | 변경 내용 | 요청자 | 작성자 |"
+    # (250623) 헤더 정렬 공백 때문에 exact-match 실패 → 헤더 고유 열 이름으로 검색
+    REV_HEADER = "| 요청자 | 작성자 |"
     h_idx, last_idx = find_last_table_row(lines, REV_HEADER)
 
     if h_idx != -1 and not version_in_table(lines, h_idx, ver_tag):
@@ -109,7 +110,8 @@ def main() -> None:
         modified = True
 
     # ── 2. 버전별 주요 변경 요약 확인 ──────────────────────────────────────
-    SUM_HEADER = "| 버전 | 날짜 | 시간(KST) | 주요 내용 |"
+    # (250623) 헤더 정렬 공백 때문에 exact-match 실패 → 헤더 고유 열 이름으로 검색
+    SUM_HEADER = "| 시간(KST)"
     h_idx2, last_idx2 = find_last_table_row(lines, SUM_HEADER)
 
     if h_idx2 != -1 and not version_in_table(lines, h_idx2, ver_tag):

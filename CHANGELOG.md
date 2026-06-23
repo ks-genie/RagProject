@@ -130,6 +130,7 @@
 | 20260619 |        | v1.61    | CHANGELOG 자동 동기화 훅 — .claude/update_changelog_hook.py 신규(개정이력표·버전별 요약 누락 감지 및 플레이스홀더 삽입). settings.local.json Stop 훅 등록. v1.51~v1.60 버전별 요약 누락분 일괄 추가. APP_VERSION 1.60→1.61                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | kslee  | claude |
 | 20260622 | 1514   | v1.62    | ①EasyOCR Reader `@st.cache_resource` 캐싱 추가 — 페이지 열람 시마다 모델 재로딩(10~30s) 방지, 앱 시작 시 1회만 로딩. ②scripts/reprocess_doc.py 신규 — 단일 문서 강제 재처리 CLI(doc_id=38 page_contents 공백 문제 진단·수정). ③Stop 훅에 소스코드 자동 push 추가 — git add -u → 스마트 커밋 메시지(변경 파일 요약) → git push. ④전체 소스 22개 파일 한국어 초보자 친화 주석 일괄 추가(워크플로우 22 에이전트 병렬). ⑤CLAUDE.md 신규 작성 — 프로젝트 개요·코드 구조·OCR 전략표·Karpathy 5규칙 포함. APP_VERSION 1.61→1.62 | kslee  | claude |
 | 20260623 | 1641   | v1.63    | ①`reset_all_for_reocr()` 분류 필드 초기화 추가 — source_type·layout_type·ocr_strategy·has_formula·language를 NULL로 리셋(기존은 status만 초기화하여 대시보드 PDF 분류 통계가 갱신되지 않던 버그 수정). ②전체 재OCR 버튼에 `st.rerun()` 추가 — 버튼 클릭 후 화면 즉시 갱신. APP_VERSION 1.62→1.63 | kslee  | claude |
+| 20260623 |       | v1.64 | ⚠️ [CHANGELOG 미작성 — Claude가 다음 응답에서 채워야 함] | kslee | claude |
 
 ---
 
@@ -234,6 +235,7 @@
 | v1.61            | 20260619 |               | CHANGELOG 자동 동기화 훅 — .claude/update_changelog_hook.py + Stop 훅 등록                                                                                                                      |
 | v1.62            | 20260622 | 15:14         | EasyOCR Reader 캐싱(@st.cache_resource), Stop 훅 소스코드 자동 push, 전체 소스 22개 파일 한국어 주석, CLAUDE.md 신규(Karpathy 5규칙), scripts/reprocess_doc.py 신규 |
 | v1.63            | 20260623 | 16:41         | reset_all_for_reocr() 분류 필드 초기화(source_type·layout_type·ocr_strategy·has_formula·language NULL), 전체 재OCR 버튼 st.rerun() 추가 |
+| v1.64 | 20260623 |               | ⚠️ [요약 미작성 — Claude가 다음 응답에서 채워야 함] |
 
 ---
 
