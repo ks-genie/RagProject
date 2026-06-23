@@ -236,6 +236,8 @@ if "pipeline_log" not in st.session_state:
     st.session_state.pipeline_log = ""          # 파이프라인 실행 결과 로그 텍스트
 if "last_refresh" not in st.session_state:
     st.session_state.last_refresh = time.time() # 마지막 데이터 새로고침 시각(초 단위)
+if "refreshing" not in st.session_state:
+    st.session_state.refreshing = False          # 새로고침 진행 중 여부 (중복 클릭 방지)
 
 
 # ---------------------------------------------------------------------------
@@ -1513,7 +1515,9 @@ with st.sidebar:
         st.code(st.session_state.pipeline_log, language=None)
 
     st.divider()
-    if st.button("🔄 새로고침", use_container_width=True):
+    if st.button("🔄 새로고침", use_container_width=True,
+                 disabled=st.session_state.refreshing):
+        st.session_state.refreshing = True
         refresh_data()
         st.rerun()
 
@@ -1993,3 +1997,7 @@ with tab_diag:
 
     elif diag_path:
         st.error(f"파일을 찾을 수 없습니다: `{diag_path}`")
+
+# 새로고침 rerun 완료 후 플래그 초기화 — 다음 렌더에서 버튼 재활성화
+if st.session_state.refreshing:
+    st.session_state.refreshing = False
