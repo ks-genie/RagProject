@@ -1,0 +1,10 @@
+[server]
+# 파일 변경 감지 비활성화 — Stop 훅이 .py 파일을 커밋할 때마다
+# Streamlit이 서버를 재시작하면서 cv2/pypdfium2 등 무거운 라이브러리를
+# 다시 로딩(30~120초)하여 블랙 스크린이 발생하는 문제를 방지한다.
+# 코드 변경 후에는 터미널에서 Ctrl+C → streamlit run app.py 로 수동 재시작.
+fileWatcherType = "none"
+
+[browser]
+# 브라우저에서 Streamlit 사용 통계 수집 비활성화
+gatherUsageStats = false
