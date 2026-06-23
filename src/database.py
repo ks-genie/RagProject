@@ -529,6 +529,11 @@ class DatabaseManager:
                     retry_count       = 0,
                     ocr_quality_score = NULL,
                     anythingllm_doc_id = NULL,
+                    source_type       = NULL,
+                    layout_type       = NULL,
+                    ocr_strategy      = NULL,
+                    has_formula       = 0,
+                    language          = NULL,
                     updated_at        = ?
                 WHERE status NOT IN (?, ?)
                 """,
