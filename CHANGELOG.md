@@ -129,6 +129,7 @@
 | 20260619 |       | v1.60 | v1.59 취소: 전체 화면 스크롤로 복원. APP_VERSION 1.59→1.60 | kslee | claude |
 | 20260619 |       | v1.61 | CHANGELOG 자동 동기화 훅 — .claude/update_changelog_hook.py 신규(개정이력표·버전별 요약 누락 감지 및 플레이스홀더 삽입). settings.local.json Stop 훅 등록. v1.51~v1.60 버전별 요약 누락분 일괄 추가. APP_VERSION 1.60→1.61 | kslee | claude |
 | 20260622 |       | v1.62 | ⚠️ [CHANGELOG 미작성 — Claude가 다음 응답에서 채워야 함] | kslee | claude |
+| 20260623 |       | v1.63 | ⚠️ [CHANGELOG 미작성 — Claude가 다음 응답에서 채워야 함] | kslee | claude |
 
 ---
 
@@ -232,6 +233,7 @@
 | v1.59~v1.60    | 20260619 |               | 문서 목록 개별 스크롤 시도 후 취소 → 전체 화면 스크롤로 복원 |
 | v1.61          | 20260619 |               | CHANGELOG 자동 동기화 훅 — .claude/update_changelog_hook.py + Stop 훅 등록 |
 | v1.62 | 20260622 |               | ⚠️ [요약 미작성 — Claude가 다음 응답에서 채워야 함] |
+| v1.63 | 20260623 |               | ⚠️ [요약 미작성 — Claude가 다음 응답에서 채워야 함] |
 
 ---
 
