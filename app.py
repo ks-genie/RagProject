@@ -39,7 +39,7 @@ _LOG_PATH = setup_logging()
 # 앱 버전 / 수정 시간
 # os.path.getmtime()으로 이 파일의 마지막 수정 타임스탬프를 가져옵니다.
 # ---------------------------------------------------------------------------
-APP_VERSION  = "1.63"
+APP_VERSION  = "1.64"
 _mtime       = os.path.getmtime(__file__)  # 현재 파일(app.py)의 수정 시각(초 단위 타임스탬프)
 APP_MODIFIED = datetime.fromtimestamp(_mtime).strftime("%Y-%m-%d %H:%M:%S")
 
@@ -236,8 +236,6 @@ if "pipeline_log" not in st.session_state:
     st.session_state.pipeline_log = ""          # 파이프라인 실행 결과 로그 텍스트
 if "last_refresh" not in st.session_state:
     st.session_state.last_refresh = time.time() # 마지막 데이터 새로고침 시각(초 단위)
-if "refreshing" not in st.session_state:
-    st.session_state.refreshing = False          # 새로고침 진행 중 여부 (중복 클릭 방지)
 
 
 # ---------------------------------------------------------------------------
@@ -1515,11 +1513,11 @@ with st.sidebar:
         st.code(st.session_state.pipeline_log, language=None)
 
     st.divider()
-    if st.button("🔄 새로고침", use_container_width=True,
-                 disabled=st.session_state.refreshing):
-        st.session_state.refreshing = True
-        refresh_data()
-        st.rerun()
+    if st.button("🔄 새로고침", use_container_width=True):
+        # (250623) 쿨다운 2초 — 마지막 새로고침 후 2초 내 재클릭은 무시
+        if time.time() - st.session_state.last_refresh > 2.0:
+            refresh_data()
+            st.rerun()
 
     st.caption(
         f"마지막 갱신: "
@@ -1998,6 +1996,3 @@ with tab_diag:
     elif diag_path:
         st.error(f"파일을 찾을 수 없습니다: `{diag_path}`")
 
-# 새로고침 rerun 완료 후 플래그 초기화 — 다음 렌더에서 버튼 재활성화
-if st.session_state.refreshing:
-    st.session_state.refreshing = False
