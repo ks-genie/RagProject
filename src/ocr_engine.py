@@ -17,6 +17,7 @@ OCR Engine — 전략별 Tesseract 실행 및 품질 점수 산출
 import logging
 import os
 import re
+import time
 from collections import defaultdict
 
 import cv2
@@ -1443,11 +1444,24 @@ class OcrEngine:
             list[PILImage.Image]: 페이지별 PIL 이미지 목록
         """
         images = []
-        try:
-            pdf = pdfium.PdfDocument(pdf_path)
-        except Exception as e:
-            logger.error("PDF 열기 실패 [%s]: %s", pdf_path, e)
-            return images
+        # (250624) 동시 재처리 중 pypdfium2가 같은 파일을 여러 스레드에서 동시에 열 때
+        # "Data format error"가 발생하는 일시적 충돌을 재시도로 복구한다.
+        pdf = None
+        for attempt in range(3):
+            try:
+                pdf = pdfium.PdfDocument(pdf_path)
+                break
+            except Exception as e:
+                if attempt < 2:
+                    wait = 2 ** attempt  # 1초, 2초
+                    logger.warning(
+                        "PDF 열기 실패 [%s] (시도 %d/3, %ds 후 재시도): %s",
+                        pdf_path, attempt + 1, wait, e,
+                    )
+                    time.sleep(wait)
+                else:
+                    logger.error("PDF 열기 최종 실패 [%s]: %s", pdf_path, e)
+                    return images
         for i in range(len(pdf)):
             try:
                 page = pdf[i]

@@ -131,6 +131,7 @@
 | 20260622 | 1514   | v1.62    | ①EasyOCR Reader `@st.cache_resource` 캐싱 추가 — 페이지 열람 시마다 모델 재로딩(10~30s) 방지, 앱 시작 시 1회만 로딩. ②scripts/reprocess_doc.py 신규 — 단일 문서 강제 재처리 CLI(doc_id=38 page_contents 공백 문제 진단·수정). ③Stop 훅에 소스코드 자동 push 추가 — git add -u → 스마트 커밋 메시지(변경 파일 요약) → git push. ④전체 소스 22개 파일 한국어 초보자 친화 주석 일괄 추가(워크플로우 22 에이전트 병렬). ⑤CLAUDE.md 신규 작성 — 프로젝트 개요·코드 구조·OCR 전략표·Karpathy 5규칙 포함. APP_VERSION 1.61→1.62 | kslee  | claude |
 | 20260623 | 1641   | v1.63    | ①`reset_all_for_reocr()` 분류 필드 초기화 추가 — source_type·layout_type·ocr_strategy·has_formula·language를 NULL로 리셋(기존은 status만 초기화하여 대시보드 PDF 분류 통계가 갱신되지 않던 버그 수정). ②전체 재OCR 버튼에 `st.rerun()` 추가 — 버튼 클릭 후 화면 즉시 갱신. APP_VERSION 1.62→1.63 | kslee  | claude |
 | 20260623 | 2245   | v1.64    | ①새로고침 버튼 화면 흐림 수정 — `refreshing` 세션스테이트 플래그 제거, `last_refresh` 2초 쿨다운으로 중복 클릭 무시(기존 end-of-script session_state 변경이 Streamlit 1.27+에서 불필요한 추가 rerun을 유발하여 오버레이가 지속되던 문제 해결). ②CHANGELOG 훅 헤더 매칭 버그 수정 — 테이블 정렬 공백 때문에 exact-string 검색이 실패하여 플레이스홀더가 삽입되지 않던 문제 수정, 각 테이블 고유 열 이름 기반 검색으로 교체. APP_VERSION 1.63→1.64 | kslee  | claude |
+| 20260624 |       | v1.65 | ⚠️ [CHANGELOG 미작성 — Claude가 다음 응답에서 채워야 함] | kslee | claude |
 
 ---
 
@@ -236,6 +237,7 @@
 | v1.62            | 20260622 | 15:14         | EasyOCR Reader 캐싱(@st.cache_resource), Stop 훅 소스코드 자동 push, 전체 소스 22개 파일 한국어 주석, CLAUDE.md 신규(Karpathy 5규칙), scripts/reprocess_doc.py 신규 |
 | v1.63            | 20260623 | 16:41         | reset_all_for_reocr() 분류 필드 초기화(source_type·layout_type·ocr_strategy·has_formula·language NULL), 전체 재OCR 버튼 st.rerun() 추가 |
 | v1.64            | 20260623 | 22:45         | 새로고침 버튼 흐림 수정(2초 쿨다운으로 중복 클릭 무시, refreshing 플래그 제거), CHANGELOG 훅 헤더 매칭 버그 수정(공백 정렬 때문에 exact-match 실패하던 문제) |
+| v1.65 | 20260624 |               | ⚠️ [요약 미작성 — Claude가 다음 응답에서 채워야 함] |
 
 ---
 
