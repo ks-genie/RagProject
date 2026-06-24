@@ -13,6 +13,9 @@ Figure Extractor — Digital PDF에서 표·그림 탐지 및 이미지 크롭
 
 import io           # 메모리 내 바이너리 스트림 처리 (파일 없이 이미지 데이터를 버퍼에 저장)
 import logging      # 로그 메시지 출력용 표준 라이브러리
+import os           # 임시 파일 삭제에 사용
+import shutil       # 파일 복사에 사용 (tempfile 방식)
+import tempfile     # 스레드별 임시 파일 생성에 사용
 from dataclasses import dataclass  # 데이터 저장용 클래스를 간편하게 정의하는 데코레이터
 
 import pdfplumber           # PDF에서 텍스트·표·이미지 위치를 파이썬 객체로 추출하는 라이브러리
@@ -153,10 +156,30 @@ def extract_assets(
     # pypdfium2 render → PIL Image: (0,0) = 페이지 좌상단, y축 역시 아래로 증가
     # 따라서 두 좌표계가 같은 방향이므로 render_scale만 곱하면 픽셀 좌표로 변환됩니다.
     # 변환 공식: pixel 좌표 = pdf 포인트 좌표 × render_scale
+    # (250624) pypdfium2는 동일 파일을 여러 스레드가 동시에 열면 "Data format error"가 발생한다.
+    # 스레드별로 임시 파일 복사본을 만들어 각자 독립적으로 열도록 한다.
+    fd, tmp_path = tempfile.mkstemp(suffix=".pdf")
+    os.close(fd)
     try:
-        # pypdfium2로 PDF를 열고 해당 페이지를 PIL 이미지로 렌더링
-        pdf_doc  = pdfium.PdfDocument(pdf_path)
-        pil_page = pdf_doc[page_num].render(scale=render_scale).to_pil()
+        shutil.copy2(pdf_path, tmp_path)
+    except Exception as exc:
+        logger.error("임시 파일 복사 실패 (%s p%d): %s", pdf_path, page_num, exc)
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+        return assets
+
+    try:
+        # pypdfium2로 임시 복사본을 열고 해당 페이지를 PIL 이미지로 렌더링
+        pdf_doc  = pdfium.PdfDocument(tmp_path)
+        try:
+            pil_page = pdf_doc[page_num].render(scale=render_scale).to_pil()
+        finally:
+            try:
+                pdf_doc.close()
+            except Exception:
+                pass
         pw, ph   = pil_page.size  # 렌더링된 전체 페이지 이미지의 너비(pw)와 높이(ph) (픽셀 단위)
 
         for asset in assets:
@@ -192,6 +215,11 @@ def extract_assets(
     except Exception as exc:
         # 페이지 렌더링 자체가 실패한 경우 (PDF 손상, 메모리 부족 등)
         logger.error("페이지 렌더링 실패 (%s p%d): %s", pdf_path, page_num, exc)
+    finally:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
 
     # image_data가 None인 자산(크롭 실패한 것)은 제외하고 반환
     return [a for a in assets if a.image_data]

@@ -134,6 +134,7 @@
 | 20260624 | 0942   | v1.65    | OCR 엔진 pypdfium2 동시 접근 충돌 수정 — 여러 문서 동시 재처리 중 같은 PDF를 OCR 엔진과 figure_extractor가 동시에 열 때 "PDFium: Data format error"가 발생하여 텍스트 0자 → REVIEW_REQUIRED가 되던 문제. `_get_page_images()`에 재시도 3회·지수 백오프(1→2초) 추가. APP_VERSION 1.64→1.65 | kslee  | claude |
 | 20260624 | 0952   | v1.66    | 파이프라인 중복 처리 근본 수정 — ①`force_reset_for_reprocess`를 NEW→ANALYZING으로 변경하여 백그라운드 run_once()가 강제 재처리 문서를 중복 픽업하지 못하도록 차단. ②`run_once()`에 원자적 클레임(`claim_new_document` CAS: NEW→ANALYZING) 추가하여 복수 스레드 동시 디스패치 방지. ③`_get_page_images()`를 재시도 방식에서 임시파일 복사 방식으로 교체하여 pypdfium2 동시 접근 충돌 원천 차단. APP_VERSION 1.65→1.66 | kslee  | claude |
 | 20260624 | 1011   | v1.67    | v1.64~v1.66 수정 검증 완료 — doc_id=38 (주요국과 환경 및 역량 비교를 통한 국내 AI 반도체 산업 발전 방향.pdf) 재처리 성공 확인(OCR 품질 99.1%, 13페이지, 14,154자 INDEXED). 기존 REVIEW_REQUIRED 원인(pypdfium2 동시 접근 충돌 + 파이프라인 중복 디스패치)이 완전히 해소됨을 실 문서로 검증. APP_VERSION 1.66→1.67 | kslee  | claude |
+| 20260624 | 1026   | v1.68    | `figure_extractor.py` pypdfium2 동시 접근 충돌 수정 — `extract_assets()`의 `pdfium.PdfDocument(pdf_path)` 직접 열기를 `tempfile.mkstemp()+shutil.copy2()` 임시파일 복사 방식으로 교체(ocr_engine.py와 동일한 방식). pdf_doc.close()를 `try/finally`로 보장, 임시파일은 finally에서 무조건 삭제. import `os·shutil·tempfile` 추가. APP_VERSION 1.67→1.68 | kslee  | claude |
 
 ---
 
@@ -242,6 +243,7 @@
 | v1.65            | 20260624 | 09:42         | OCR 엔진 pypdfium2 동시 접근 충돌 수정 — _get_page_images() 재시도 3회·지수 백오프(1→2초) 추가로 동시 재처리 시 Data format error → 0자 → REVIEW_REQUIRED 재발 방지 |
 | v1.66            | 20260624 | 09:52         | 파이프라인 중복 처리 근본 수정 — force_reset→ANALYZING 변경, run_once() CAS 클레임 추가, _get_page_images() 임시파일 복사 방식으로 교체하여 pypdfium2 동시 접근 충돌 원천 차단 |
 | v1.67            | 20260624 | 10:11         | v1.64~v1.66 수정 검증 완료 — doc_id=38 (AI 반도체 산업 발전 방향.pdf) 재처리 성공(OCR 99.1%, 13페이지, 14,154자), REVIEW_REQUIRED 재발 없음 확인 |
+| v1.68            | 20260624 | 10:26         | figure_extractor.py pypdfium2 동시 접근 충돌 수정 — pdfium.PdfDocument(pdf_path) 직접 열기를 tempfile 복사 방식으로 교체(ocr_engine.py와 동일), pdf_doc.close() finally 보장 |
 
 ---
 
