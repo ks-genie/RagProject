@@ -149,8 +149,12 @@ class Pipeline:
         pending = self._db.get_documents_by_status(Status.NEW)
         logger.info("처리 대기: %d건", len(pending))
 
-        # 대기 중인 문서를 하나씩 순서대로 처리한다.
+        # (250624) 원자적 클레임으로 중복 처리 방지 — 여러 run_once() 스레드가 동시에
+        # 같은 NEW 목록을 가져오더라도 claim_new_document()가 단 하나에만 True를 반환한다.
         for doc in pending:
+            if not self._db.claim_new_document(doc["id"]):
+                logger.debug("문서 %d 처리권 경쟁 탈락 — 건너뜀", doc["id"])
+                continue
             self._process_one(doc, stats)
 
         logger.info("사이클 완료 — %s", stats.summary())

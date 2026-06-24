@@ -17,7 +17,8 @@ OCR Engine — 전략별 Tesseract 실행 및 품질 점수 산출
 import logging
 import os
 import re
-import time
+import shutil
+import tempfile
 from collections import defaultdict
 
 import cv2
@@ -1444,34 +1445,42 @@ class OcrEngine:
             list[PILImage.Image]: 페이지별 PIL 이미지 목록
         """
         images = []
-        # (250624) 동시 재처리 중 pypdfium2가 같은 파일을 여러 스레드에서 동시에 열 때
-        # "Data format error"가 발생하는 일시적 충돌을 재시도로 복구한다.
-        pdf = None
-        for attempt in range(3):
+        # (250624) 동시 재처리 시 여러 스레드가 같은 PDF를 pypdfium2로 동시에 열면
+        # "Data format error"가 발생한다. 각 호출마다 임시 파일에 복사하여 파일 핸들을
+        # 독립적으로 유지함으로써 동시 접근 충돌을 원천 차단한다.
+        fd, tmp_path = tempfile.mkstemp(suffix=".pdf")
+        os.close(fd)
+        try:
+            shutil.copy2(pdf_path, tmp_path)
+            pdf = pdfium.PdfDocument(tmp_path)
+        except Exception as e:
+            logger.error("PDF 열기 실패 [%s]: %s", pdf_path, e)
             try:
-                pdf = pdfium.PdfDocument(pdf_path)
-                break
-            except Exception as e:
-                if attempt < 2:
-                    wait = 2 ** attempt  # 1초, 2초
-                    logger.warning(
-                        "PDF 열기 실패 [%s] (시도 %d/3, %ds 후 재시도): %s",
-                        pdf_path, attempt + 1, wait, e,
-                    )
-                    time.sleep(wait)
-                else:
-                    logger.error("PDF 열기 최종 실패 [%s]: %s", pdf_path, e)
-                    return images
-        for i in range(len(pdf)):
+                os.unlink(tmp_path)
+            except OSError:
+                pass
+            return images
+        try:
+            for i in range(len(pdf)):
+                try:
+                    page = pdf[i]
+                    # scale 값으로 해상도 결정: 72 DPI * 4.17 ≈ 300 DPI
+                    bitmap = page.render(scale=dpi_scale)
+                    images.append(bitmap.to_pil())
+                except Exception as e:
+                    logger.warning("페이지 %d 이미지 변환 실패 (빈 페이지 대체): %s", i, e)
+                    # 변환 실패 시 A4 72dpi×2 기준(1240×1754px) 흰 빈 이미지로 대체
+                    images.append(PILImage.new("RGB", (1240, 1754), color=(255, 255, 255)))
+        finally:
+            # Windows에서 열린 파일은 삭제 불가 — 먼저 닫은 후 임시 파일 제거
             try:
-                page = pdf[i]
-                # scale 값으로 해상도 결정: 72 DPI * 4.17 ≈ 300 DPI
-                bitmap = page.render(scale=dpi_scale)
-                images.append(bitmap.to_pil())
-            except Exception as e:
-                logger.warning("페이지 %d 이미지 변환 실패 (빈 페이지 대체): %s", i, e)
-                # 변환 실패 시 A4 72dpi×2 기준(1240×1754px) 흰 빈 이미지로 대체
-                images.append(PILImage.new("RGB", (1240, 1754), color=(255, 255, 255)))
+                pdf.close()
+            except Exception:
+                pass
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
         return images
 
 

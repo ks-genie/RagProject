@@ -488,14 +488,16 @@ class DatabaseManager:
 
     def force_reset_for_reprocess(self, doc_id: int):
         """
-        문서를 상태에 관계없이 강제로 NEW 상태로 초기화합니다.
+        문서를 상태에 관계없이 강제로 ANALYZING 상태로 초기화합니다.
 
         INDEXED(최종 완료) 상태의 문서도 포함하여 모든 처리 결과를 초기화합니다.
-        재처리가 필요한 특수한 경우(예: 모델 업그레이드, 설정 변경)에 사용합니다.
+        ANALYZING으로 설정하면 백그라운드 run_once() 스레드가 이 문서를 중복 픽업하지 않습니다.
 
         매개변수:
             doc_id: 강제 초기화할 문서의 ID
         """
+        # (250624) NEW 대신 ANALYZING으로 리셋 — run_once()는 NEW만 픽업하므로
+        # 동시에 실행 중인 백그라운드 파이프라인이 같은 문서를 중복 처리하는 것을 방지한다.
         with self._connect() as conn:
             conn.execute(
                 """
@@ -505,8 +507,31 @@ class DatabaseManager:
                     anythingllm_doc_id = NULL, updated_at = ?
                 WHERE id = ?
                 """,
-                (Status.NEW, datetime.now(timezone.utc).isoformat(), doc_id),
+                (Status.ANALYZING, datetime.now(timezone.utc).isoformat(), doc_id),
             )
+
+    def claim_new_document(self, doc_id: int) -> bool:
+        """NEW → ANALYZING 상태 전환을 원자적으로 수행하여 중복 처리를 방지합니다.
+
+        여러 스레드가 동시에 같은 문서를 처리하려 할 때 단 하나의 스레드만
+        성공(True 반환)하고 나머지는 False를 받아 건너뛸 수 있습니다.
+
+        매개변수:
+            doc_id: 클레임할 문서의 ID
+
+        반환값:
+            성공(이 스레드가 처리권을 얻음)이면 True, 이미 다른 스레드가 가져갔으면 False.
+        """
+        # (250624) WHERE status=NEW 조건 덕분에 두 스레드가 동시에 실행해도
+        # 한 스레드만 rowcount=1을 받는다 (SQLite 단일 write 잠금 보장).
+        with self._connect() as conn:
+            cur = conn.execute(
+                """UPDATE documents SET status=?, updated_at=?
+                   WHERE id=? AND status=?""",
+                (Status.ANALYZING, datetime.now(timezone.utc).isoformat(),
+                 doc_id, Status.NEW),
+            )
+            return cur.rowcount == 1
 
     def reset_all_for_reocr(self) -> int:
         """
