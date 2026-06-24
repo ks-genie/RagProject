@@ -39,7 +39,7 @@ _LOG_PATH = setup_logging()
 # 앱 버전 / 수정 시간
 # os.path.getmtime()으로 이 파일의 마지막 수정 타임스탬프를 가져옵니다.
 # ---------------------------------------------------------------------------
-APP_VERSION  = "1.68"
+APP_VERSION  = "1.69"
 _mtime       = os.path.getmtime(__file__)  # 현재 파일(app.py)의 수정 시각(초 단위 타임스탬프)
 APP_MODIFIED = datetime.fromtimestamp(_mtime).strftime("%Y-%m-%d %H:%M:%S")
 
@@ -1267,11 +1267,13 @@ def render_pdf_viewer(doc: dict, key_prefix: str = ""):
         with st.spinner("텍스트 추출 중..."):
             # 텍스트 추출 후 리플로우(줄바꿈 정리) 적용
             text = reflow_ocr_text(extract_text_page(file_path, page_num, strategy, doc_id))
-        st.text_area(
-            label="",
-            value=text,
-            height=680,
-            key=f"{key_prefix}txtarea_{doc_id}_{page_num}",
+        # (250624) 폰트 1.5x — st.text_area는 CSS 폰트 제어 불가, st.markdown으로 교체
+        escaped = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        st.markdown(
+            f'<div style="font-size:1.5em;line-height:1.6;white-space:pre-wrap;'
+            f'overflow-y:auto;height:680px;padding:8px;border:1px solid #444;'
+            f'border-radius:4px;background:#0e1117;color:#fafafa;">{escaped}</div>',
+            unsafe_allow_html=True,
         )
 
 
