@@ -1490,7 +1490,7 @@ with st.sidebar:
     st.title("📄 RAG Pipeline")
     # 버전 및 수정 시각을 작은 글씨로 표시
     st.markdown(
-        f'<div style="margin-top:-8px;margin-bottom:4px;font-size:0.75em;color:#999;">'
+        f'<div style="margin-top:-8px;margin-bottom:4px;font-size:1.0em;color:#999;">'
         f'<b style="color:#7eb8f7;">v{APP_VERSION}</b> &nbsp; {APP_MODIFIED}'
         f'</div>',
         unsafe_allow_html=True,
