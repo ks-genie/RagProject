@@ -136,6 +136,7 @@
 | 20260624 | 1011   | v1.67    | v1.64~v1.66 수정 검증 완료 — doc_id=38 (주요국과 환경 및 역량 비교를 통한 국내 AI 반도체 산업 발전 방향.pdf) 재처리 성공 확인(OCR 품질 99.1%, 13페이지, 14,154자 INDEXED). 기존 REVIEW_REQUIRED 원인(pypdfium2 동시 접근 충돌 + 파이프라인 중복 디스패치)이 완전히 해소됨을 실 문서로 검증. APP_VERSION 1.66→1.67 | kslee  | claude |
 | 20260624 | 1026   | v1.68    | `figure_extractor.py` pypdfium2 동시 접근 충돌 수정 — `extract_assets()`의 `pdfium.PdfDocument(pdf_path)` 직접 열기를 `tempfile.mkstemp()+shutil.copy2()` 임시파일 복사 방식으로 교체(ocr_engine.py와 동일한 방식). pdf_doc.close()를 `try/finally`로 보장, 임시파일은 finally에서 무조건 삭제. import `os·shutil·tempfile` 추가. APP_VERSION 1.67→1.68 | kslee  | claude |
 | 20260624 | 1040   | v1.69    | 원본/OCR 비교 뷰어 OCR 텍스트 폰트 1.5x 확대 — `st.text_area` → `st.markdown` 교체(`font-size:1.5em`, `line-height:1.6`, `white-space:pre-wrap`, 스크롤 가능 고정 높이 680px). APP_VERSION 1.68→1.69 | kslee  | claude |
+| 20260625 |       | v1.70 | ⚠️ [CHANGELOG 미작성 — Claude가 다음 응답에서 채워야 함] | kslee | claude |
 
 ---
 
@@ -246,6 +247,7 @@
 | v1.67            | 20260624 | 10:11         | v1.64~v1.66 수정 검증 완료 — doc_id=38 (AI 반도체 산업 발전 방향.pdf) 재처리 성공(OCR 99.1%, 13페이지, 14,154자), REVIEW_REQUIRED 재발 없음 확인 |
 | v1.68            | 20260624 | 10:26         | figure_extractor.py pypdfium2 동시 접근 충돌 수정 — pdfium.PdfDocument(pdf_path) 직접 열기를 tempfile 복사 방식으로 교체(ocr_engine.py와 동일), pdf_doc.close() finally 보장 |
 | v1.69            | 20260624 | 10:40         | 원본/OCR 비교 뷰어 OCR 텍스트 폰트 1.5x 확대 — st.text_area → st.markdown 교체(font-size:1.5em, 스크롤 680px) |
+| v1.70 | 20260625 |               | ⚠️ [요약 미작성 — Claude가 다음 응답에서 채워야 함] |
 
 ---
 

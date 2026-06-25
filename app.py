@@ -39,7 +39,7 @@ _LOG_PATH = setup_logging()
 # 앱 버전 / 수정 시간
 # os.path.getmtime()으로 이 파일의 마지막 수정 타임스탬프를 가져옵니다.
 # ---------------------------------------------------------------------------
-APP_VERSION  = "1.69"
+APP_VERSION  = "1.70"
 _mtime       = os.path.getmtime(__file__)  # 현재 파일(app.py)의 수정 시각(초 단위 타임스탬프)
 APP_MODIFIED = datetime.fromtimestamp(_mtime).strftime("%Y-%m-%d %H:%M:%S")
 
