@@ -1270,7 +1270,7 @@ def render_pdf_viewer(doc: dict, key_prefix: str = ""):
         # (250624) 폰트 1.5x — st.text_area는 CSS 폰트 제어 불가, st.markdown으로 교체
         escaped = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
         st.markdown(
-            f'<div style="font-size:1.5em;line-height:1.6;white-space:pre-wrap;'
+            f'<div style="font-size:1.2em;line-height:1.6;white-space:pre-wrap;'
             f'overflow-y:auto;height:680px;padding:8px;border:1px solid #444;'
             f'border-radius:4px;background:#0e1117;color:#fafafa;">{escaped}</div>',
             unsafe_allow_html=True,
