@@ -207,6 +207,21 @@ class ApiClient:
         if not resp.ok:
             raise ApiError(f"임베딩 실패 HTTP {resp.status_code}: {resp.text[:200]}", resp.status_code)
 
+        # (260629) HTTP 200이어도 서버가 location을 인식 못 하면 조용히 무시(no-op)할 수 있다.
+        # 실제로 update-embeddings가 200을 주면서도 워크스페이스에 아무것도 추가하지 않아
+        # 192건이 INDEXED로 오인된 사고가 있었다. 그래서 응답 본문의
+        # workspace.documents에 방금 넘긴 docpath가 실제로 들어갔는지 반드시 확인한다.
+        try:
+            body = resp.json()
+        except Exception:
+            body = {}
+        ws = body.get("workspace", {})
+        if isinstance(ws, list):              # 일부 API 버전은 workspace를 리스트로 반환
+            ws = ws[0] if ws else {}
+        docpaths = {d.get("docpath") for d in (ws.get("documents") or [])}
+        if location not in docpaths:
+            raise ApiError(f"임베딩이 워크스페이스에 반영되지 않음: {location}")
+
         logger.info("임베딩 완료: %s", location.split("\\")[-1].split("/")[-1])
 
     # ------------------------------------------------------------------

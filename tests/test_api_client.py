@@ -118,9 +118,11 @@ class TestUploadText:
 class TestEmbedDocument:
 
     def test_embed_success(self, client):
+        loc = "custom-documents/raw-test-uuid.json"
+        body = {"workspace": {"documents": [{"docpath": loc}]}}
         with patch("src.api_client.requests.post",
-                   return_value=_mock_response(200, {})):
-            client.embed_document("custom-documents/raw-test-uuid.json")  # 예외 없으면 성공
+                   return_value=_mock_response(200, body)):
+            client.embed_document(loc)  # 워크스페이스에 반영 확인되면 예외 없음
 
     def test_embed_no_workspace(self, client):
         client._workspace = ""
@@ -130,8 +132,9 @@ class TestEmbedDocument:
 
     def test_embed_sends_correct_location(self, client):
         location = "custom-documents/raw-test-uuid.json"
+        body = {"workspace": {"documents": [{"docpath": location}]}}
         with patch("src.api_client.requests.post",
-                   return_value=_mock_response(200, {})) as mock_post:
+                   return_value=_mock_response(200, body)) as mock_post:
             client.embed_document(location)
 
         _, kwargs = mock_post.call_args
@@ -151,6 +154,24 @@ class TestEmbedDocument:
             with pytest.raises(ApiError) as exc:
                 client.embed_document("custom-documents/doc.json")
         assert "타임아웃" in str(exc.value)
+
+    def test_embed_raises_when_not_reflected(self, client):
+        # update-embeddings가 HTTP 200을 주지만 워크스페이스 documents에
+        # 해당 location이 없으면(서버가 조용히 무시) 실패로 처리해야 한다.
+        body = {"workspace": {"documents": []}}
+        with patch("src.api_client.requests.post",
+                   return_value=_mock_response(200, body)):
+            with pytest.raises(ApiError) as exc:
+                client.embed_document("custom-documents/raw-test-uuid.json")
+        assert "반영" in str(exc.value)
+
+    def test_embed_success_when_reflected(self, client):
+        # 응답 본문의 workspace.documents에 location이 있으면 성공(예외 없음).
+        loc = "custom-documents/raw-test-uuid.json"
+        body = {"workspace": {"documents": [{"docpath": loc}]}}
+        with patch("src.api_client.requests.post",
+                   return_value=_mock_response(200, body)):
+            client.embed_document(loc)
 
 
 # ===========================================================================
